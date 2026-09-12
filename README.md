@@ -29,6 +29,11 @@ AEGS 是一个用于研究和实现 **Governed Self-Evolution（受治理的自�
 - [开放问题账本](docs/09-open-questions.md)
 - [来自 3D 项目的可迁移模式](docs/10-reference-derived-patterns.md)
 - [进化提案模板](docs/templates/EVOLUTION_PROPOSAL_TEMPLATE.md)
+- [v0.2 产品需求](docs/11-v0.2-product-requirements.md)
+- [人类治理控制台](docs/12-human-governance-console.md)
+- [自指导与受控能力雷达](docs/13-self-guidance-and-capability-radar.md)
+- [项目治理包模板](docs/templates/PROJECT_CHARTER_TEMPLATE.md)
+- [Agent 交接模板](docs/templates/AGENT_HANDOFF_TEMPLATE.md)
 
 ## 状态
 
