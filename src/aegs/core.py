@@ -127,6 +127,8 @@ def initialise(root_value: str | Path, owner: str) -> dict[str, Any]:
         "open_risks": [],
         "safe_next_actions": ["Run 'aegs verify .'", "Create a GREEN proposal for a sandbox experiment."],
         "current_git_head": git_head(root),
+        "architecture_snapshot": None,
+        "unresolved_questions": [],
     }
     write_json(aegs / "charter.json", charter)
     write_json(aegs / "state.json", state)
@@ -234,11 +236,40 @@ def create_handoff(root_value: str | Path) -> dict[str, Any]:
         "unverified_claims": state.get("unverified_claims", []),
         "current_goal": state.get("current_goal"),
         "open_risks": state.get("open_risks", []),
+        "architecture_snapshot": state.get("architecture_snapshot"),
+        "unresolved_questions": state.get("unresolved_questions", []),
         "safe_next_actions": state.get("safe_next_actions", []),
         "verification": check,
     }
     write_json(governance_dir(root) / "handoffs" / f"{handoff_id}.json", handoff)
     write_json(governance_dir(root) / "current_handoff.json", handoff)
+    markdown = "\n".join([
+        "# AEGS Agent Handoff",
+        "",
+        f"- Handoff ID: `{handoff_id}`",
+        f"- Project: `{handoff['project_id']}`",
+        f"- Charter version: `{handoff['charter_version']}`",
+        f"- Architecture snapshot: `{handoff['architecture_snapshot'] or 'not yet discovered'}`",
+        "",
+        "## Current goal",
+        str(handoff["current_goal"] or "Not recorded."),
+        "",
+        "## Verified facts",
+        *([f"- {fact}" for fact in handoff["verified_facts"]] or ["- None recorded."]),
+        "",
+        "## Unresolved questions",
+        *([f"- {question}" for question in handoff["unresolved_questions"]] or ["- None recorded."]),
+        "",
+        "## Open risks",
+        *([f"- {risk}" for risk in handoff["open_risks"]] or ["- None recorded."]),
+        "",
+        "## Safe next actions",
+        *([f"- {action}" for action in handoff["safe_next_actions"]] or ["- Run `aegs verify .` before taking action."]),
+        "",
+        "This file is an entry point only. Verify the JSON handoff, Charter, Event Ledger and current Git state before acting.",
+        "",
+    ])
+    (governance_dir(root) / "HANDOFF.md").write_text(markdown, encoding="utf-8", newline="\n")
     append_event(root, "handoff.created", {"handoff_id": handoff_id})
     return handoff
 

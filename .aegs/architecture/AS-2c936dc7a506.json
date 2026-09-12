@@ -1,0 +1,427 @@
+{
+  "snapshot_id": "AS-2c936dc7a506",
+  "schema_version": "0.1",
+  "created_at": "2026-09-12T10:57:06Z",
+  "root": "F:\\PythonProjects1\\AEGS",
+  "git_head": "6a2badbbe0d4c82e029877c28dd4c55ef49d5e6a",
+  "discovery_mode": "read_only",
+  "files": [
+    {
+      "path": ".gitignore",
+      "size_bytes": 363,
+      "category": "other"
+    },
+    {
+      "path": "pyproject.toml",
+      "size_bytes": 345,
+      "category": "dependency_manifest"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 3695,
+      "category": "documentation"
+    },
+    {
+      "path": "architecture/capability-model.md",
+      "size_bytes": 389,
+      "category": "documentation"
+    },
+    {
+      "path": "architecture/control-plane.md",
+      "size_bytes": 1408,
+      "category": "documentation"
+    },
+    {
+      "path": "architecture/evolution-model.md",
+      "size_bytes": 263,
+      "category": "documentation"
+    },
+    {
+      "path": "architecture/lifecycle.md",
+      "size_bytes": 292,
+      "category": "documentation"
+    },
+    {
+      "path": "architecture/system-overview.md",
+      "size_bytes": 268,
+      "category": "documentation"
+    },
+    {
+      "path": "decisions/ADR-0001-aegs-initial-architecture.md",
+      "size_bytes": 680,
+      "category": "documentation"
+    },
+    {
+      "path": "decisions/ADR-0002-aegs-control-plane-and-human-governance.md",
+      "size_bytes": 790,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/00-project-vision.md",
+      "size_bytes": 812,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/01-architecture-discussion.md",
+      "size_bytes": 1120,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/02-architecture-decisions.md",
+      "size_bytes": 1196,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/03-aegs-v0.1-architecture.md",
+      "size_bytes": 2288,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/04-evolution-loop.md",
+      "size_bytes": 1478,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/05-expert-organization.md",
+      "size_bytes": 927,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/06-experience-evidence-provenance.md",
+      "size_bytes": 1542,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/07-evaluation-framework.md",
+      "size_bytes": 1204,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/08-governance-and-constitution.md",
+      "size_bytes": 828,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/09-open-questions.md",
+      "size_bytes": 862,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/10-reference-derived-patterns.md",
+      "size_bytes": 2244,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/11-v0.2-product-requirements.md",
+      "size_bytes": 2420,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/12-human-governance-console.md",
+      "size_bytes": 2469,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/13-self-guidance-and-capability-radar.md",
+      "size_bytes": 2279,
+      "category": "documentation"
+    },
+    {
+      "path": "tests/test_core.py",
+      "size_bytes": 3103,
+      "category": "test"
+    },
+    {
+      "path": "src/aegs/cli.py",
+      "size_bytes": 3553,
+      "category": "source"
+    },
+    {
+      "path": "src/aegs/console.py",
+      "size_bytes": 8053,
+      "category": "source"
+    },
+    {
+      "path": "src/aegs/core.py",
+      "size_bytes": 13553,
+      "category": "source"
+    },
+    {
+      "path": "src/aegs/discovery.py",
+      "size_bytes": 6529,
+      "category": "source"
+    },
+    {
+      "path": "src/aegs/__init__.py",
+      "size_bytes": 80,
+      "category": "source"
+    },
+    {
+      "path": "docs/templates/AGENT_HANDOFF_TEMPLATE.md",
+      "size_bytes": 593,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/templates/EVOLUTION_PROPOSAL_TEMPLATE.md",
+      "size_bytes": 1558,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/templates/PROJECT_CHARTER_TEMPLATE.md",
+      "size_bytes": 607,
+      "category": "documentation"
+    }
+  ],
+  "category_counts": {
+    "other": 1,
+    "dependency_manifest": 1,
+    "documentation": 25,
+    "test": 1,
+    "source": 5
+  },
+  "relationships": [
+    {
+      "source": "tests/test_core.py",
+      "target": "tempfile",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_core.py:1"
+    },
+    {
+      "source": "tests/test_core.py",
+      "target": "unittest",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_core.py:2"
+    },
+    {
+      "source": "tests/test_core.py",
+      "target": "pathlib",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_core.py:3"
+    },
+    {
+      "source": "tests/test_core.py",
+      "target": "aegs.core",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_core.py:5"
+    },
+    {
+      "source": "tests/test_core.py",
+      "target": "aegs.discovery",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_core.py:6"
+    },
+    {
+      "source": "src/aegs/cli.py",
+      "target": "__future__",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/cli.py:1"
+    },
+    {
+      "source": "src/aegs/cli.py",
+      "target": "argparse",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/cli.py:3"
+    },
+    {
+      "source": "src/aegs/cli.py",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/cli.py:4"
+    },
+    {
+      "source": "src/aegs/cli.py",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/cli.py:5"
+    },
+    {
+      "source": "src/aegs/cli.py",
+      "target": ".console",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/cli.py:7"
+    },
+    {
+      "source": "src/aegs/cli.py",
+      "target": ".core",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/cli.py:8"
+    },
+    {
+      "source": "src/aegs/cli.py",
+      "target": ".discovery",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/cli.py:9"
+    },
+    {
+      "source": "src/aegs/console.py",
+      "target": "__future__",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/console.py:1"
+    },
+    {
+      "source": "src/aegs/console.py",
+      "target": "html",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/console.py:3"
+    },
+    {
+      "source": "src/aegs/console.py",
+      "target": "http.server",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/console.py:4"
+    },
+    {
+      "source": "src/aegs/console.py",
+      "target": "pathlib",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/console.py:5"
+    },
+    {
+      "source": "src/aegs/console.py",
+      "target": "urllib.parse",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/console.py:6"
+    },
+    {
+      "source": "src/aegs/console.py",
+      "target": ".core",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/console.py:8"
+    },
+    {
+      "source": "src/aegs/core.py",
+      "target": "__future__",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/core.py:1"
+    },
+    {
+      "source": "src/aegs/core.py",
+      "target": "hashlib",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/core.py:3"
+    },
+    {
+      "source": "src/aegs/core.py",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/core.py:4"
+    },
+    {
+      "source": "src/aegs/core.py",
+      "target": "subprocess",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/core.py:5"
+    },
+    {
+      "source": "src/aegs/core.py",
+      "target": "uuid",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/core.py:6"
+    },
+    {
+      "source": "src/aegs/core.py",
+      "target": "datetime",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/core.py:7"
+    },
+    {
+      "source": "src/aegs/core.py",
+      "target": "pathlib",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/core.py:8"
+    },
+    {
+      "source": "src/aegs/core.py",
+      "target": "typing",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/core.py:9"
+    },
+    {
+      "source": "src/aegs/discovery.py",
+      "target": "__future__",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/discovery.py:1"
+    },
+    {
+      "source": "src/aegs/discovery.py",
+      "target": "re",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/discovery.py:3"
+    },
+    {
+      "source": "src/aegs/discovery.py",
+      "target": "uuid",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/discovery.py:4"
+    },
+    {
+      "source": "src/aegs/discovery.py",
+      "target": "datetime",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/discovery.py:5"
+    },
+    {
+      "source": "src/aegs/discovery.py",
+      "target": "pathlib",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/discovery.py:6"
+    },
+    {
+      "source": "src/aegs/discovery.py",
+      "target": "typing",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/discovery.py:7"
+    },
+    {
+      "source": "src/aegs/discovery.py",
+      "target": ".core",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/discovery.py:9"
+    }
+  ],
+  "known_limits": [
+    "Relationships are static inferences, not runtime proof.",
+    "Sensitive file contents are excluded by filename/suffix policy.",
+    "External services and undocumented human knowledge require confirmation."
+  ],
+  "excluded_sensitive_file_count": 0,
+  "skipped_large_file_count": 0,
+  "unresolved_questions": [
+    "Which inferred relationships are business-critical?",
+    "Which external systems, production constraints, and undocumented dependencies are missing?",
+    "Which components may not be changed without explicit owner approval?"
+  ]
+}

@@ -2,13 +2,25 @@
   "schema_version": "0.1",
   "project_id": "AEGS",
   "charter_version": "0.1.0",
-  "current_goal": "Set the project purpose and create the first governed proposal.",
-  "verified_facts": [],
-  "unverified_claims": [],
-  "open_risks": [],
-  "safe_next_actions": [
-    "Run 'aegs verify .'",
-    "Create a GREEN proposal for a sandbox experiment."
+  "current_goal": "Review the architecture snapshot, resolve critical unknowns, and create evidence-backed improvement proposals.",
+  "verified_facts": [
+    "Read-only architecture snapshot AS-7f80ffae623d created for Git 6a2badbbe0d4c82e029877c28dd4c55ef49d5e6a."
   ],
-  "current_git_head": "f320af1c82de47836b91eeaf7887f1b0d674b3e2"
+  "unverified_claims": [],
+  "open_risks": [
+    "Static discovery is not runtime proof; external services and undocumented dependencies require human confirmation.",
+    "Sensitive files are intentionally excluded from discovery content."
+  ],
+  "safe_next_actions": [
+    "Review the current architecture snapshot and confirm or correct unresolved questions.",
+    "Create a governed proposal before changing project behavior."
+  ],
+  "current_git_head": "f320af1c82de47836b91eeaf7887f1b0d674b3e2",
+  "architecture_snapshot": "AS-7f80ffae623d",
+  "architecture_snapshot_git_head": "6a2badbbe0d4c82e029877c28dd4c55ef49d5e6a",
+  "unresolved_questions": [
+    "Which inferred relationships are business-critical?",
+    "Which external systems, production constraints, and undocumented dependencies are missing?",
+    "Which components may not be changed without explicit owner approval?"
+  ]
 }

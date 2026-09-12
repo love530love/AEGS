@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 
 from aegs.core import AEGSError, create_handoff, create_proposal, decide, initialise, record_feedback, verify, verify_ledger
+from aegs.discovery import discover
 
 
 class GovernanceCoreTests(unittest.TestCase):
@@ -40,6 +41,21 @@ class GovernanceCoreTests(unittest.TestCase):
             record_feedback(self.root, "visitor", "constraint", "project", "persistent", "certain", "Require review", True)
         directive = record_feedback(self.root, "owner@example.test", "constraint", "project", "persistent", "certain", "Require review", True)
         self.assertEqual(directive["kind"], "constraint")
+
+    def test_discovery_creates_architecture_snapshot_and_handoff(self):
+        (self.root / "app.py").write_text("from services.api import client\n", encoding="utf-8")
+        (self.root / "requirements.txt").write_text("example==1\n", encoding="utf-8")
+        (self.root / ".env").write_text("SECRET=do-not-read\n", encoding="utf-8")
+        snapshot = discover(self.root)
+        self.assertEqual(snapshot["discovery_mode"], "read_only")
+        self.assertIsNone(snapshot["working_tree_dirty"])
+        self.assertEqual(snapshot["category_counts"]["dependency_manifest"], 1)
+        self.assertEqual(snapshot["excluded_sensitive_file_count"], 1)
+        self.assertEqual(snapshot["relationships"][0]["confidence"], "inferred")
+        handoff = create_handoff(self.root)
+        self.assertEqual(handoff["architecture_snapshot"], snapshot["snapshot_id"])
+        self.assertIn(snapshot["snapshot_id"], handoff["verified_facts"][0])
+        self.assertTrue((self.root / ".aegs" / "HANDOFF.md").exists())
 
 
 if __name__ == "__main__":
