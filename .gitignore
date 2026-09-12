@@ -1,0 +1,25 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+secrets/
+
+# Python and virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local tooling and editor state
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.idea/
+.vscode/
+
+# Generated runtime artifacts; retain approved documents and templates
+artifacts/
+logs/
+raw_snapshots/
+*.sqlite3-wal
+*.sqlite3-shm
