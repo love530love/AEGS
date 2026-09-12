@@ -1,0 +1,14 @@
+{
+  "schema_version": "0.1",
+  "project_id": "AEGS",
+  "charter_version": "0.1.0",
+  "current_goal": "Set the project purpose and create the first governed proposal.",
+  "verified_facts": [],
+  "unverified_claims": [],
+  "open_risks": [],
+  "safe_next_actions": [
+    "Run 'aegs verify .'",
+    "Create a GREEN proposal for a sandbox experiment."
+  ],
+  "current_git_head": "f320af1c82de47836b91eeaf7887f1b0d674b3e2"
+}

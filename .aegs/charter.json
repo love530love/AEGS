@@ -1,0 +1,24 @@
+{
+  "schema_version": "0.1",
+  "project_id": "AEGS",
+  "charter_version": "0.1.0",
+  "owners": [
+    "love530love"
+  ],
+  "purpose": "Define before enabling autonomous actions.",
+  "allowed_actions": [
+    "read",
+    "propose",
+    "sandbox_experiment"
+  ],
+  "forbidden_actions": [
+    "credential_access",
+    "production_write",
+    "charter_self_modification"
+  ],
+  "approval_policy": {
+    "GREEN": "owner may approve; sandbox only",
+    "YELLOW": "owner plus evidence and rollback reference required",
+    "RED": "manual owner approval and independent review required"
+  }
+}

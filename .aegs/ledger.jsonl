@@ -1,0 +1,2 @@
+{"event_hash":"2365c7a85919f0bc86cfda46d18e05d464107cc32cc087176f44de20910c7094","event_id":"EV-00ca43e4b1ab","event_type":"governance.initialised","occurred_at":"2026-09-12T10:27:12Z","payload":{"charter_version":"0.1.0","owner":"love530love"},"previous_hash":"GENESIS"}
+{"event_hash":"d2001ea4104678c826dea9058ec85a86e004ec513fe1d8e252ccc131db539e96","event_id":"EV-b665ad175aec","event_type":"handoff.created","occurred_at":"2026-09-12T10:27:12Z","payload":{"handoff_id":"HO-caae9818abd3"},"previous_hash":"2365c7a85919f0bc86cfda46d18e05d464107cc32cc087176f44de20910c7094"}

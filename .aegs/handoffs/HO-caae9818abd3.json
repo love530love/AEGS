@@ -1,0 +1,22 @@
+{
+  "handoff_id": "HO-caae9818abd3",
+  "created_at": "2026-09-12T10:27:12Z",
+  "project_id": "AEGS",
+  "charter_version": "0.1.0",
+  "verified_facts": [],
+  "unverified_claims": [],
+  "current_goal": "Set the project purpose and create the first governed proposal.",
+  "open_risks": [],
+  "safe_next_actions": [
+    "Run 'aegs verify .'",
+    "Create a GREEN proposal for a sandbox experiment."
+  ],
+  "verification": {
+    "ok": true,
+    "root": "F:\\PythonProjects1\\AEGS",
+    "git_head": "f320af1c82de47836b91eeaf7887f1b0d674b3e2",
+    "ledger_events": 1,
+    "ledger_status": "ok",
+    "errors": []
+  }
+}

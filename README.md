@@ -38,3 +38,17 @@ AEGS 是一个用于研究和实现 **Governed Self-Evolution（受治理的自�
 ## 状态
 
 架构基线：v0.1（设计阶段）。本文档描述目标设计，不宣称已有可运行的自进化实现或已验证的安全保证。
+
+## 可运行原型
+
+仓库现含一个零第三方依赖的控制平面原型：它为项目创建 `.aegs/` 治理包、校验追加式哈希事件账本、创建提案、记录受风险等级约束的人类决定，并生成可验证交接包。它是治理闭环的最小垂直切片，不是生产级身份认证、密钥管理或完整 Web 控制台。
+
+```powershell
+python -m pip install -e .
+aegs init <project-path> --owner <owner-id>
+aegs verify <project-path>
+aegs proposal create <project-path> --title "Sandbox test" --risk GREEN --proposer agent-name
+aegs handoff <project-path>
+```
+
+原型使用 JSON 作为机器可验证的运行时格式；`docs/templates/` 中的 YAML 是面向人类讨论的模板。后续可通过受控迁移支持 YAML 输入，而不放弃规范化 JSON 审计记录。
