@@ -4,6 +4,7 @@ import argparse
 import json
 import sys
 
+from .console import serve
 from .core import AEGSError, create_handoff, create_proposal, decide, initialise, verify
 
 
@@ -31,11 +32,23 @@ def parser() -> argparse.ArgumentParser:
     decision.add_argument("--approver", required=True)
     decision.add_argument("--evidence")
     decision.add_argument("--rollback")
+    server = commands.add_parser("serve", help="run the local Human Governance Console")
+    server.add_argument("path", nargs="?", default=".")
+    server.add_argument("--port", type=int, default=8080)
     return root
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
+    if args.command == "serve":
+        if not 1 <= args.port <= 65535:
+            parser().error("--port must be between 1 and 65535")
+        try:
+            serve(args.path, args.port)
+        except AEGSError as error:
+            print(f"AEGS error: {error}", file=sys.stderr)
+            return 2
+        return 0
     try:
         if args.command == "init":
             result = initialise(args.path, args.owner)

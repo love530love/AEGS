@@ -241,3 +241,52 @@ def create_handoff(root_value: str | Path) -> dict[str, Any]:
     write_json(governance_dir(root) / "current_handoff.json", handoff)
     append_event(root, "handoff.created", {"handoff_id": handoff_id})
     return handoff
+
+
+def list_proposals(root_value: str | Path) -> list[dict[str, Any]]:
+    root = project_dir(root_value)
+    directory = governance_dir(root) / "proposals"
+    if not directory.exists():
+        return []
+    proposals = [read_json(path) for path in directory.glob("PR-*.json")]
+    return sorted(proposals, key=lambda item: item.get("created_at", ""), reverse=True)
+
+
+def record_feedback(
+    root_value: str | Path,
+    author: str,
+    kind: str,
+    scope: str,
+    duration: str,
+    confidence: str,
+    source_text: str,
+    confirmed: bool,
+) -> dict[str, Any]:
+    root = project_dir(root_value)
+    charter = read_json(governance_dir(root) / "charter.json")
+    allowed_kinds = {"preference", "constraint", "fact_correction", "hypothesis"}
+    allowed_scopes = {"task", "project", "project_group", "global_candidate"}
+    allowed_durations = {"once", "task_end", "expires_at", "persistent"}
+    allowed_confidence = {"certain", "preference", "exploratory"}
+    if kind not in allowed_kinds or scope not in allowed_scopes or duration not in allowed_durations or confidence not in allowed_confidence:
+        raise AEGSError("Feedback contains an unsupported governance classification")
+    if not confirmed:
+        raise AEGSError("Feedback must be explicitly confirmed before it becomes a governance directive")
+    if kind == "constraint" and author not in charter.get("owners", []):
+        raise AEGSError("Only a named owner may create a project constraint")
+    directive_id = f"HD-{uuid.uuid4().hex[:12]}"
+    directive = {
+        "directive_id": directive_id,
+        "kind": kind,
+        "scope": scope,
+        "duration": duration,
+        "confidence": confidence,
+        "author": author,
+        "source_text": source_text,
+        "normalized_effect": None,
+        "confirmed": True,
+        "created_at": now_utc(),
+    }
+    write_json(governance_dir(root) / "directives" / f"{directive_id}.json", directive)
+    append_event(root, "human.feedback.recorded", {"directive_id": directive_id, "kind": kind, "scope": scope, "author": author})
+    return directive

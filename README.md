@@ -49,6 +49,9 @@ aegs init <project-path> --owner <owner-id>
 aegs verify <project-path>
 aegs proposal create <project-path> --title "Sandbox test" --risk GREEN --proposer agent-name
 aegs handoff <project-path>
+aegs serve <project-path> --port 8080
 ```
 
 原型使用 JSON 作为机器可验证的运行时格式；`docs/templates/` 中的 YAML 是面向人类讨论的模板。后续可通过受控迁移支持 YAML 输入，而不放弃规范化 JSON 审计记录。
+
+`aegs serve` 启动本机 Human Governance Console，用于查看验证状态、待决提案和结构化反馈。它没有身份认证，**只能绑定在本机进行原型演示，禁止暴露到局域网或互联网**。

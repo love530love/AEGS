@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from aegs.core import AEGSError, create_handoff, create_proposal, decide, initialise, verify, verify_ledger
+from aegs.core import AEGSError, create_handoff, create_proposal, decide, initialise, record_feedback, verify, verify_ledger
 
 
 class GovernanceCoreTests(unittest.TestCase):
@@ -32,6 +32,14 @@ class GovernanceCoreTests(unittest.TestCase):
         ledger.write_text(ledger.read_text(encoding="utf-8").replace("governance.initialised", "tampered"), encoding="utf-8")
         ok, _, _ = verify_ledger(self.root)
         self.assertFalse(ok)
+
+    def test_constraint_feedback_requires_confirmation_and_owner(self):
+        with self.assertRaises(AEGSError):
+            record_feedback(self.root, "owner@example.test", "constraint", "project", "persistent", "certain", "Require review", False)
+        with self.assertRaises(AEGSError):
+            record_feedback(self.root, "visitor", "constraint", "project", "persistent", "certain", "Require review", True)
+        directive = record_feedback(self.root, "owner@example.test", "constraint", "project", "persistent", "certain", "Require review", True)
+        self.assertEqual(directive["kind"], "constraint")
 
 
 if __name__ == "__main__":
