@@ -1,0 +1,20 @@
+{
+  "proposal_id": "PR-b2791ac33a8b",
+  "status": "APPROVED",
+  "title": "AEP NL journal mirror integrity verification",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-15T12:14:07Z",
+  "baseline_git_head": "da11ca835b54362c45f989b466da18a0e2ad84b1",
+  "scope": "Strict JSONL-to-SQLite mirror verification with explicit safe tail synchronization",
+  "alternatives": "Keep head-only status comparison or make SQLite an authoritative source",
+  "impact": "Mirror discrepancies become HOLD and cannot be silently repaired by sync",
+  "counter_evidence": "SQLite is a local derivative and cannot prove distributed durability or replace JSONL authority",
+  "acceptance_criteria": "Verify checks head, count and event fields; divergence blocks sync; tests pass",
+  "expires_at": "2026-12-15T23:59:59Z",
+  "evidence_refs": [
+    "AEP-NL-20261115-2005-03"
+  ],
+  "rollback_reference": "Revert the journal verification commit and retain the existing JSONL-authoritative journal mirror.",
+  "decision": "HD-ae30ebd2b66b"
+}

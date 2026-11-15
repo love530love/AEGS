@@ -1,13 +1,14 @@
 import json
 import multiprocessing
+import sqlite3
 import tempfile
 import time
 import unittest
 from pathlib import Path
 
-from aegs.core import AEGSError, append_event, code_fingerprint, create_handoff, create_proposal, decide, doctor, initialise, ledger_write_lock, record_feedback, same_code_fingerprint, takeover, verify, verify_ledger
+from aegs.core import AEGSError, append_event, code_fingerprint, create_handoff, create_proposal, decide, document_hash, doctor, initialise, ledger_write_lock, record_feedback, same_code_fingerprint, takeover, verify, verify_ledger
 from aegs.discovery import diff_snapshots, discover
-from aegs.journal import init_journal, journal_status, sync_journal
+from aegs.journal import init_journal, journal_path, journal_status, sync_journal, verify_journal
 
 
 def _append_event_in_process(root_text: str, worker: str, timeout_seconds: float, ready, results) -> None:
@@ -215,9 +216,42 @@ class GovernanceCoreTests(unittest.TestCase):
         self.assertEqual(initialized["status"], "PASS")
         self.assertEqual(journal_status(self.root)["status"], "PASS")
         create_proposal(self.root, "Journal sync", "GREEN", "agent")
-        self.assertEqual(journal_status(self.root)["status"], "STALE")
+        stale = verify_journal(self.root)
+        self.assertEqual(stale["status"], "HOLD")
+        self.assertTrue(stale["syncable_missing_tail"])
+        self.assertGreater(stale["ledger_events"], stale["journal_events"])
         self.assertEqual(sync_journal(self.root)["status"], "PASS")
         self.assertEqual(journal_status(self.root)["status"], "PASS")
+
+    def test_journal_verify_detects_critical_event_divergence_and_blocks_sync(self):
+        init_journal(self.root)
+        connection = sqlite3.connect(journal_path(self.root))
+        try:
+            row = connection.execute("SELECT event_id, event_type, occurred_at, previous_hash, payload_json FROM journal_events WHERE sequence = 1").fetchone()
+            forged = {"event_id": "EV-forged", "event_type": row[1], "occurred_at": row[2], "previous_hash": row[3], "payload": json.loads(row[4])}
+            connection.execute("UPDATE journal_events SET event_id = ?, event_hash = ? WHERE sequence = 1", (forged["event_id"], document_hash(forged)))
+            connection.commit()
+        finally:
+            connection.close()
+        report = verify_journal(self.root)
+        self.assertEqual(report["status"], "HOLD")
+        self.assertFalse(report["syncable_missing_tail"])
+        self.assertIn("event differs from JSONL authority", report["reasons"][0])
+        with self.assertRaises(AEGSError):
+            sync_journal(self.root)
+
+    def test_journal_verify_checks_metadata_head_and_event_count(self):
+        init_journal(self.root)
+        connection = sqlite3.connect(journal_path(self.root))
+        try:
+            connection.execute("UPDATE journal_meta SET value = ? WHERE key = ?", ("forged-head", "ledger_head"))
+            connection.commit()
+        finally:
+            connection.close()
+        report = verify_journal(self.root)
+        self.assertEqual(report["status"], "HOLD")
+        self.assertEqual(report["ledger_events"], report["journal_events"])
+        self.assertIn("metadata ledger_head differs", report["reasons"][0])
 
 
 if __name__ == "__main__":
