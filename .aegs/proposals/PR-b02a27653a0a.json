@@ -1,0 +1,20 @@
+{
+  "proposal_id": "PR-b02a27653a0a",
+  "status": "APPROVED",
+  "title": "AEP NL JSONL process writer lock",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-15T12:07:39Z",
+  "baseline_git_head": "b8dedae08554c42563e11b8cc703212d6743b684",
+  "scope": "Cross-process exclusive ledger writes with bounded wait, flush, and fsync",
+  "alternatives": "Retain cooperative unlocked JSONL appends or migrate fully to SQLite now",
+  "impact": "Concurrent writers wait or fail without appending; lock file becomes a runtime artifact",
+  "counter_evidence": "Advisory locking is not a signed or distributed consensus mechanism",
+  "acceptance_criteria": "Two spawned writers append a valid chain; timeout is bounded; lock release permits later write; journal remains compatible",
+  "expires_at": "2026-12-15T23:59:59Z",
+  "evidence_refs": [
+    "AEP-NL-20261115-2005-02"
+  ],
+  "rollback_reference": "Revert the writer-lock implementation commit; retain existing ledger and regenerate governance artifacts.",
+  "decision": "HD-6b7a6179ecba"
+}

@@ -24,3 +24,4 @@ raw_snapshots/
 *.sqlite3-wal
 *.sqlite3-shm
 .aegs/events.sqlite3
+.aegs/ledger.lock

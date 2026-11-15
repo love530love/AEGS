@@ -1,11 +1,23 @@
 import json
+import multiprocessing
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
-from aegs.core import AEGSError, code_fingerprint, create_handoff, create_proposal, decide, doctor, initialise, record_feedback, same_code_fingerprint, takeover, verify, verify_ledger
+from aegs.core import AEGSError, append_event, code_fingerprint, create_handoff, create_proposal, decide, doctor, initialise, ledger_write_lock, record_feedback, same_code_fingerprint, takeover, verify, verify_ledger
 from aegs.discovery import diff_snapshots, discover
 from aegs.journal import init_journal, journal_status, sync_journal
+
+
+def _append_event_in_process(root_text: str, worker: str, timeout_seconds: float, ready, results) -> None:
+    """Spawn-safe worker used to prove OS-level, not just thread-level, locking."""
+    try:
+        ready.set()
+        event = append_event(Path(root_text), "test.concurrent.writer", {"worker": worker}, lock_timeout_seconds=timeout_seconds)
+        results.put(("ok", worker, event["event_id"]))
+    except Exception as error:  # Send the failure back rather than treating process exit as success.
+        results.put(("error", worker, str(error)))
 
 
 class GovernanceCoreTests(unittest.TestCase):
@@ -56,6 +68,50 @@ class GovernanceCoreTests(unittest.TestCase):
         ledger.write_text(ledger.read_text(encoding="utf-8").replace("governance.initialised", "tampered"), encoding="utf-8")
         ok, _, _ = verify_ledger(self.root)
         self.assertFalse(ok)
+
+    def test_two_process_writers_preserve_a_valid_hash_chain(self):
+        context = multiprocessing.get_context("spawn")
+        results = context.Queue()
+        ready_one = context.Event()
+        ready_two = context.Event()
+        first = context.Process(target=_append_event_in_process, args=(str(self.root), "one", 5.0, ready_one, results))
+        second = context.Process(target=_append_event_in_process, args=(str(self.root), "two", 5.0, ready_two, results))
+        first.start()
+        second.start()
+        self.assertTrue(ready_one.wait(5))
+        self.assertTrue(ready_two.wait(5))
+        first.join(15)
+        second.join(15)
+        self.assertFalse(first.is_alive())
+        self.assertFalse(second.is_alive())
+        self.assertEqual(first.exitcode, 0)
+        self.assertEqual(second.exitcode, 0)
+        outcomes = sorted(results.get(timeout=5) for _ in range(2))
+        self.assertEqual([outcome[0] for outcome in outcomes], ["ok", "ok"])
+        ok, message, count = verify_ledger(self.root)
+        self.assertTrue(ok, message)
+        self.assertEqual(count, 3)
+
+    def test_process_lock_timeout_fails_closed_and_release_allows_later_write(self):
+        context = multiprocessing.get_context("spawn")
+        results = context.Queue()
+        ready = context.Event()
+        with ledger_write_lock(self.root, timeout_seconds=1.0):
+            blocked = context.Process(target=_append_event_in_process, args=(str(self.root), "blocked", 0.20, ready, results))
+            blocked.start()
+            self.assertTrue(ready.wait(5))
+            time.sleep(0.35)
+            blocked.join(10)
+        self.assertFalse(blocked.is_alive())
+        self.assertEqual(blocked.exitcode, 0)
+        outcome = results.get(timeout=5)
+        self.assertEqual(outcome[0], "error")
+        self.assertIn("Timed out waiting for ledger writer lock", outcome[2])
+        later = append_event(self.root, "test.concurrent.writer", {"worker": "after-release"}, lock_timeout_seconds=1.0)
+        self.assertEqual(later["payload"]["worker"], "after-release")
+        ok, message, count = verify_ledger(self.root)
+        self.assertTrue(ok, message)
+        self.assertEqual(count, 2)
 
     def test_constraint_feedback_requires_confirmation_and_owner(self):
         with self.assertRaises(AEGSError):

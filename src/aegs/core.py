@@ -2,11 +2,24 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
+import time
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+try:  # Windows uses the CRT byte-range locking API.
+    import msvcrt
+except ImportError:  # pragma: no cover - exercised on non-Windows platforms.
+    msvcrt = None
+
+try:  # POSIX fallback for contributors running the same repository elsewhere.
+    import fcntl
+except ImportError:  # pragma: no cover - exercised on Windows.
+    fcntl = None
 
 
 class AEGSError(RuntimeError):
@@ -106,24 +119,73 @@ def ledger_head(root: Path) -> str | None:
     return json.loads(lines[-1]).get("event_hash") if lines else None
 
 
-def append_event(root: Path, event_type: str, payload: dict[str, Any]) -> dict[str, Any]:
+@contextmanager
+def ledger_write_lock(root: Path, timeout_seconds: float = 2.0, poll_interval_seconds: float = 0.02):
+    """Acquire the cooperative, process-wide lock for a JSONL ledger append.
+
+    The lock file is intentionally separate from the ledger so that the ledger
+    remains an ordinary JSONL hash chain.  Callers either own the lock before
+    deriving ``previous_hash`` and writing, or receive an error without an
+    append.  It is a local-host safety boundary, not distributed consensus.
+    """
+    if timeout_seconds < 0 or poll_interval_seconds <= 0:
+        raise AEGSError("Ledger lock timeout must be non-negative and polling interval positive.")
+    lock_path = governance_dir(root) / "ledger.lock"
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    deadline = time.monotonic() + timeout_seconds
+    with lock_path.open("a+b") as handle:
+        handle.seek(0, os.SEEK_END)
+        if handle.tell() == 0:
+            handle.write(b"\0")
+            handle.flush()
+            os.fsync(handle.fileno())
+        acquired = False
+        while not acquired:
+            try:
+                handle.seek(0)
+                if msvcrt is not None:
+                    msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+                elif fcntl is not None:  # pragma: no cover - non-Windows fallback.
+                    fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                else:  # pragma: no cover - unsupported Python platform.
+                    raise AEGSError("No supported process-level file-locking backend is available.")
+                acquired = True
+            except OSError as error:
+                if time.monotonic() >= deadline:
+                    raise AEGSError(f"Timed out waiting for ledger writer lock after {timeout_seconds:.2f} seconds.") from error
+                time.sleep(poll_interval_seconds)
+        try:
+            yield
+        finally:
+            handle.seek(0)
+            if msvcrt is not None:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+            elif fcntl is not None:  # pragma: no cover - non-Windows fallback.
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+def append_event(root: Path, event_type: str, payload: dict[str, Any], lock_timeout_seconds: float = 2.0) -> dict[str, Any]:
+    """Append one durable event while preserving the JSONL hash chain."""
     ledger = governance_dir(root) / "ledger.jsonl"
-    previous_hash = "GENESIS"
-    if ledger.exists():
-        lines = [line for line in ledger.read_text(encoding="utf-8").splitlines() if line.strip()]
-        if lines:
-            previous_hash = json.loads(lines[-1])["event_hash"]
-    event = {
-        "event_id": f"EV-{uuid.uuid4().hex[:12]}",
-        "event_type": event_type,
-        "occurred_at": now_utc(),
-        "previous_hash": previous_hash,
-        "payload": payload,
-    }
-    event["event_hash"] = document_hash(event)
-    with ledger.open("a", encoding="utf-8", newline="\n") as handle:
-        handle.write(canonical_json(event) + "\n")
-    return event
+    with ledger_write_lock(root, timeout_seconds=lock_timeout_seconds):
+        previous_hash = "GENESIS"
+        if ledger.exists():
+            lines = [line for line in ledger.read_text(encoding="utf-8").splitlines() if line.strip()]
+            if lines:
+                previous_hash = json.loads(lines[-1])["event_hash"]
+        event = {
+            "event_id": f"EV-{uuid.uuid4().hex[:12]}",
+            "event_type": event_type,
+            "occurred_at": now_utc(),
+            "previous_hash": previous_hash,
+            "payload": payload,
+        }
+        event["event_hash"] = document_hash(event)
+        with ledger.open("a", encoding="utf-8", newline="\n") as handle:
+            handle.write(canonical_json(event) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        return event
 
 
 def verify_ledger(root: Path) -> tuple[bool, str, int]:
