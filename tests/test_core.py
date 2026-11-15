@@ -10,6 +10,7 @@ from pathlib import Path
 from aegs.core import AEGSError, append_event, code_fingerprint, create_handoff, create_proposal, decide, document_hash, doctor, initialise, ledger_write_lock, record_feedback, same_code_fingerprint, takeover, verify, verify_ledger
 from aegs.discovery import diff_snapshots, discover
 from aegs.evidence import export_evidence
+from aegs.anchor import verify_external_anchor, write_external_anchor
 from aegs.journal import init_journal, journal_path, journal_status, sync_journal, verify_journal
 
 
@@ -63,6 +64,39 @@ class GovernanceCoreTests(unittest.TestCase):
         self.assertNotEqual(exported["takeover_status"], "PASS")
         self.assertTrue(exported["advisory_only"])
         self.assertFalse(exported["automatic_takeover_allowed"])
+
+    def _external_anchor_path(self) -> Path:
+        path = self.root.parent / f"{self.root.name}-ledger-anchor.json"
+        self.addCleanup(lambda: path.unlink(missing_ok=True))
+        return path
+
+    def test_external_anchor_normal_advance_passes_doctor(self):
+        path = self._external_anchor_path()
+        first = write_external_anchor(self.root, path)
+        create_proposal(self.root, "Advance anchor", "GREEN", "agent")
+        second = write_external_anchor(self.root, path)
+        self.assertEqual(second["previous_anchor_head"], first["current_head"])
+        self.assertNotEqual(second["current_head"], first["current_head"])
+        self.assertEqual(verify_external_anchor(self.root)["status"], "PASS")
+        anchor_check = next(check for check in doctor(self.root)["checks"] if check["name"] == "external_ledger_anchor")
+        self.assertEqual(anchor_check["status"], "PASS")
+
+    def test_external_anchor_old_head_is_stale(self):
+        path = self._external_anchor_path()
+        write_external_anchor(self.root, path)
+        create_proposal(self.root, "Leave old anchor", "GREEN", "agent")
+        report = verify_external_anchor(self.root)
+        self.assertEqual(report["status"], "STALE")
+        self.assertIn("older than", report["reasons"][0])
+
+    def test_external_anchor_summary_mismatch_holds_doctor(self):
+        path = self._external_anchor_path()
+        write_external_anchor(self.root, path)
+        anchor = json.loads(path.read_text(encoding="utf-8"))
+        anchor["summary"] = "forged-summary"
+        path.write_text(json.dumps(anchor), encoding="utf-8")
+        self.assertEqual(verify_external_anchor(self.root)["status"], "HOLD")
+        self.assertEqual(doctor(self.root)["status"], "HOLD")
 
     def test_yellow_approval_requires_evidence_and_rollback(self):
         proposal = create_proposal(

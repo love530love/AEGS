@@ -1,0 +1,20 @@
+{
+  "proposal_id": "PR-1db85eb71654",
+  "status": "APPROVED",
+  "title": "Local external ledger head anchors",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-15T13:01:24Z",
+  "baseline_git_head": "55ca11a07ada2dd1ad83eaa9196c022ab3f3a127",
+  "scope": "Optional external local ledger-head anchor file plus doctor verification",
+  "alternatives": "Rely solely on in-repository JSONL verification or claim remote/signed immutability",
+  "impact": "Rollback, replacement, stale anchor, and summary mismatch become visible to doctor",
+  "counter_evidence": "A local anchor can be modified and is neither signed nor an immutable external witness",
+  "acceptance_criteria": "Normal anchor advance passes; old anchor is stale; tampered summary holds; full tests pass",
+  "expires_at": "2026-12-15T23:59:59Z",
+  "evidence_refs": [
+    "AEP-NL-20261115-2005-05"
+  ],
+  "rollback_reference": "Revert the local anchor commit and remove configured anchor paths from AEGS state.",
+  "decision": "HD-728e9fc6cb8b"
+}

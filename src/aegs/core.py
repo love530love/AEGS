@@ -588,6 +588,9 @@ def doctor(root_value: str | Path) -> dict[str, Any]:
             checks.append({"name": "state_handoff_alignment", "status": "PASS" if not state_reasons else "STALE", "detail": "; ".join(state_reasons) or "State and handoff bindings align."})
         except AEGSError as error:
             checks.append({"name": "state_handoff_alignment", "status": "STALE", "detail": str(error)})
+    from .anchor import verify_external_anchor
+    anchor = verify_external_anchor(root)
+    checks.append({"name": "external_ledger_anchor", "status": anchor["status"], "detail": "; ".join(anchor["reasons"]) or "External ledger anchor matches the current head."})
     overall = "HOLD" if any(check["status"] == "HOLD" for check in checks) else ("STALE" if any(check["status"] == "STALE" for check in checks) else "PASS")
     return {"status": overall, "project": str(root), "checks": checks, "safe_next_actions": gate["safe_next_actions"]}
 

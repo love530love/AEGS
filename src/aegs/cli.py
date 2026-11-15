@@ -9,6 +9,7 @@ from .core import AEGSError, create_handoff, create_proposal, decide, doctor, in
 from .discovery import diff_snapshots, discover, list_snapshots
 from .evidence import export_evidence
 from .journal import init_journal, journal_status, sync_journal, verify_journal
+from .anchor import verify_external_anchor, write_external_anchor
 
 
 def parser() -> argparse.ArgumentParser:
@@ -45,6 +46,14 @@ def parser() -> argparse.ArgumentParser:
     evidence_commands = evidence.add_subparsers(dest="evidence_command", required=True)
     evidence_export = evidence_commands.add_parser("export", help="print aep-project-evidence-v1 source facts without writing")
     evidence_export.add_argument("path", nargs="?", default=".")
+    anchor = commands.add_parser("anchor", help="manage an optional local external ledger-head anchor")
+    anchor_commands = anchor.add_subparsers(dest="anchor_command", required=True)
+    anchor_write = anchor_commands.add_parser("write", help="atomically create or advance a local anchor")
+    anchor_write.add_argument("path", nargs="?", default=".")
+    anchor_write.add_argument("--file", required=True, help="anchor file outside .aegs")
+    anchor_verify = anchor_commands.add_parser("verify", help="verify the configured or explicit local anchor")
+    anchor_verify.add_argument("path", nargs="?", default=".")
+    anchor_verify.add_argument("--file", help="override the configured anchor path")
     proposal = commands.add_parser("proposal", help="manage evolution proposals")
     proposal_commands = proposal.add_subparsers(dest="proposal_command", required=True)
     create = proposal_commands.add_parser("create")
@@ -110,6 +119,10 @@ def main(argv: list[str] | None = None) -> int:
             result = sync_journal(args.path)
         elif args.command == "evidence" and args.evidence_command == "export":
             result = export_evidence(args.path)
+        elif args.command == "anchor" and args.anchor_command == "write":
+            result = write_external_anchor(args.path, args.file)
+        elif args.command == "anchor" and args.anchor_command == "verify":
+            result = verify_external_anchor(args.path, args.file)
         elif args.command == "proposal" and args.proposal_command == "create":
             result = create_proposal(args.path, args.title, args.risk, args.proposer, args.scope, args.alternatives, args.impact, args.counter_evidence, args.acceptance_criteria, args.expires_at)
         else:
