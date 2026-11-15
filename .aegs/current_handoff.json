@@ -1,10 +1,10 @@
 {
-  "handoff_id": "HO-2615bd532acb",
-  "created_at": "2026-11-15T11:23:25Z",
+  "handoff_id": "HO-34b4e8605ca8",
+  "created_at": "2026-11-15T11:44:59Z",
   "project_id": "AEGS",
   "charter_version": "0.1.0",
   "verified_facts": [
-    "Read-only architecture snapshot AS-7dae6ff69c7c created for Git f3495025e893987f523ce147116a7aa6dad42679."
+    "Read-only architecture snapshot AS-e75cef1b72f9 created for Git a4763c3631b81ef07313bc9a2ca2809223b02272."
   ],
   "unverified_claims": [],
   "current_goal": "Review the architecture snapshot, resolve critical unknowns, and create evidence-backed improvement proposals.",
@@ -12,7 +12,7 @@
     "Static discovery is not runtime proof; external services and undocumented dependencies require human confirmation.",
     "Sensitive files are intentionally excluded from discovery content."
   ],
-  "architecture_snapshot": "AS-7dae6ff69c7c",
+  "architecture_snapshot": "AS-e75cef1b72f9",
   "unresolved_questions": [
     "Which inferred relationships are business-critical?",
     "Which external systems, production constraints, and undocumented dependencies are missing?",
@@ -25,23 +25,23 @@
   "verification": {
     "ok": true,
     "root": "F:\\PythonProjects1\\AEGS",
-    "git_head": "f3495025e893987f523ce147116a7aa6dad42679",
-    "ledger_events": 25,
+    "git_head": "a4763c3631b81ef07313bc9a2ca2809223b02272",
+    "ledger_events": 29,
     "ledger_status": "ok",
     "errors": []
   },
   "evidence_binding": {
     "code_fingerprint": {
       "git_available": true,
-      "head": "f3495025e893987f523ce147116a7aa6dad42679",
-      "tracked_content_hash": "f6d3b35f07028d1df34943ecdd621effa616d0943caa0eb8272c36eeb96218cc",
+      "head": "a4763c3631b81ef07313bc9a2ca2809223b02272",
+      "tracked_content_hash": "cef2af646638dff50762157b7c13be7c6266726d1167bd137a931394597acf89",
       "dirty_non_governance": false,
       "source": "git_index"
     },
-    "ledger_head_before_handoff": "ce32019593efe0729f8f04b23e06459e44d5409d2ed1bf77c29ebdb2ad89fe8e",
-    "architecture_snapshot_hash": "0b61f7271438aceb15d8358d61e693ac82e6d48baac0e47985388ab8a39c6ed8",
-    "generated_at": "2026-11-15T11:23:25Z",
-    "handoff_event_hash": "d6870cb73738cb047b2ff8ef3a971f4930705e6476487e8dbc0a28bc6af01584"
+    "ledger_head_before_handoff": "6ca7405a5adc95af3a26a188aa4b4d304303a3f7a9f8862508b67169a553a18d",
+    "architecture_snapshot_hash": "840a41b7b58fab1c7abe4997b072c72a9ab19eaa30ee570bc1e4354aafd8bf51",
+    "generated_at": "2026-11-15T11:44:59Z",
+    "handoff_event_hash": "b8f81925c400cd2368cd3363a5f5890a1bd1fc8e37612f087e892fa4e5ba69f8"
   },
-  "handoff_hash": "7a924181cc9b1c64c946c5e2b54d906c5fee15fcecdbbc716fd6424aea6de514"
+  "handoff_hash": "cb469a3220b135b1e6c8e05c3c50051e818c88f58da98dca15e32ae36f560f40"
 }

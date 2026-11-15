@@ -4,7 +4,7 @@
   "charter_version": "0.1.0",
   "current_goal": "Review the architecture snapshot, resolve critical unknowns, and create evidence-backed improvement proposals.",
   "verified_facts": [
-    "Read-only architecture snapshot AS-7dae6ff69c7c created for Git f3495025e893987f523ce147116a7aa6dad42679."
+    "Read-only architecture snapshot AS-e75cef1b72f9 created for Git a4763c3631b81ef07313bc9a2ca2809223b02272."
   ],
   "unverified_claims": [],
   "open_risks": [
@@ -16,8 +16,8 @@
     "Create a governed proposal before changing project behavior."
   ],
   "current_git_head": "f320af1c82de47836b91eeaf7887f1b0d674b3e2",
-  "architecture_snapshot": "AS-7dae6ff69c7c",
-  "architecture_snapshot_git_head": "f3495025e893987f523ce147116a7aa6dad42679",
+  "architecture_snapshot": "AS-e75cef1b72f9",
+  "architecture_snapshot_git_head": "a4763c3631b81ef07313bc9a2ca2809223b02272",
   "unresolved_questions": [
     "Which inferred relationships are business-critical?",
     "Which external systems, production constraints, and undocumented dependencies are missing?",

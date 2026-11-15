@@ -1,0 +1,12 @@
+{
+  "directive_id": "HD-0f6dd9993ccb",
+  "kind": "decision",
+  "scope": "project",
+  "proposal_id": "PR-276f98420b9c",
+  "action": "APPROVE",
+  "approver": "love530love",
+  "evidence": "AEP-OPS-20261115-02: independently reproduced creation-time expiry and sensitive-path wording gaps",
+  "rollback_reference": "Revert the AEP-OPS-20261115-02 implementation commit, then regenerate discovery and handoff evidence.",
+  "reason": "Creation-time validation prevents stale high-risk proposals from entering the workflow and aligns documentation with executable filtering.",
+  "created_at": "2026-11-15T11:43:31Z"
+}

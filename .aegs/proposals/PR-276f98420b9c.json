@@ -1,0 +1,20 @@
+{
+  "proposal_id": "PR-276f98420b9c",
+  "status": "APPROVED",
+  "title": "AEP-OPS-20261115-02 creation expiry and sensitive-path wording",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-15T11:43:24Z",
+  "baseline_git_head": "5b1a4fe1b288f5d359ed2909c88d13310e76fbe1",
+  "scope": "AEGS proposal creation validation, sensitive filtering documentation, and regression tests",
+  "alternatives": "Keep approval-time expiry enforcement and current broad wording",
+  "impact": "YELLOW/RED callers must supply valid future timezone expiries at creation; documentation becomes narrower",
+  "counter_evidence": "Stricter creation validation may require integrations to add expiry handling",
+  "acceptance_criteria": "Missing, naive, and past YELLOW/RED expiries fail at creation; GREEN remains optional; docs state file-name/suffix-only filtering",
+  "expires_at": "2026-12-15T23:59:59Z",
+  "evidence_refs": [
+    "AEP-OPS-20261115-02: independently reproduced creation-time expiry and sensitive-path wording gaps"
+  ],
+  "rollback_reference": "Revert the AEP-OPS-20261115-02 implementation commit, then regenerate discovery and handoff evidence.",
+  "decision": "HD-0f6dd9993ccb"
+}
