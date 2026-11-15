@@ -1,0 +1,11 @@
+{
+  "directive_id": "HD-cb4fcfe8d521",
+  "kind": "decision",
+  "scope": "project",
+  "proposal_id": "PR-3b25572ac0e3",
+  "action": "APPROVE",
+  "approver": "love530love",
+  "evidence": "USR-20261115: user requested documented roadmap and real implementation",
+  "rollback_reference": "Revert the implementation commit, then regenerate discover and handoff evidence.",
+  "created_at": "2026-11-15T09:45:35Z"
+}

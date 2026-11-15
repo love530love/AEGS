@@ -1,0 +1,14 @@
+{
+  "proposal_id": "PR-3b25572ac0e3",
+  "status": "APPROVED",
+  "title": "P0 structured proposal and decision records",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-15T09:45:29Z",
+  "baseline_git_head": "b73dcb30c1539685ed106940e6f04602ffbb6175",
+  "evidence_refs": [
+    "USR-20261115: user requested documented roadmap and real implementation"
+  ],
+  "rollback_reference": "Revert the implementation commit, then regenerate discover and handoff evidence.",
+  "decision": "HD-cb4fcfe8d521"
+}

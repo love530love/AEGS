@@ -1,10 +1,10 @@
 {
-  "snapshot_id": "AS-8b2a220bfa66",
+  "snapshot_id": "AS-c03e589f1325",
   "schema_version": "0.1",
-  "created_at": "2026-11-15T09:40:42Z",
+  "created_at": "2026-11-15T09:47:32Z",
   "root": "F:\\PythonProjects1\\AEGS",
-  "git_head": "7377fd6cfaacaa24b4068e56922a4ecf2c2ca3a0",
-  "working_tree_dirty": false,
+  "git_head": "b5b620c5dcd1df9d9a388c67ea07c6ccf0a900d9",
+  "working_tree_dirty": true,
   "discovery_mode": "read_only",
   "files": [
     {
@@ -19,7 +19,7 @@
     },
     {
       "path": "README.md",
-      "size_bytes": 4362,
+      "size_bytes": 4417,
       "category": "documentation"
     },
     {
@@ -65,6 +65,11 @@
     {
       "path": "decisions/ADR-0003-trusted-takeover-before-autonomy.md",
       "size_bytes": 813,
+      "category": "documentation"
+    },
+    {
+      "path": "decisions/ADR-0004-structured-high-risk-proposals.md",
+      "size_bytes": 640,
       "category": "documentation"
     },
     {
@@ -148,28 +153,33 @@
       "category": "documentation"
     },
     {
+      "path": "docs/15-implementation-roadmap.md",
+      "size_bytes": 2394,
+      "category": "documentation"
+    },
+    {
       "path": "docs/19-domain-model-v0.2.md",
       "size_bytes": 8280,
       "category": "documentation"
     },
     {
       "path": "tests/test_core.py",
-      "size_bytes": 4165,
+      "size_bytes": 4709,
       "category": "test"
     },
     {
       "path": "src/aegs/cli.py",
-      "size_bytes": 3824,
+      "size_bytes": 4293,
       "category": "source"
     },
     {
       "path": "src/aegs/console.py",
-      "size_bytes": 8053,
+      "size_bytes": 8177,
       "category": "source"
     },
     {
       "path": "src/aegs/core.py",
-      "size_bytes": 18386,
+      "size_bytes": 19280,
       "category": "source"
     },
     {
@@ -201,7 +211,7 @@
   "category_counts": {
     "other": 1,
     "dependency_manifest": 1,
-    "documentation": 30,
+    "documentation": 32,
     "test": 1,
     "source": 5
   },
@@ -464,5 +474,5 @@
     "Which external systems, production constraints, and undocumented dependencies are missing?",
     "Which components may not be changed without explicit owner approval?"
   ],
-  "content_hash": "d61a728402916202d6cb47c8d70f8ed737a177756af77ebf0eefd2d64e7af4d9"
+  "content_hash": "7d890b65a4cf9970b57891e579e4f497ba869be19a5f205aa760250068532bd2"
 }
