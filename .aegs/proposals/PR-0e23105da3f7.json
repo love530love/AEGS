@@ -1,0 +1,20 @@
+{
+  "proposal_id": "PR-0e23105da3f7",
+  "status": "APPROVED",
+  "title": "M2 full-loop design and SQLite journal mirror pilot",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-15T11:07:52Z",
+  "baseline_git_head": "d2795496141aa69e8bdf5aab17e5b68f90be61f6",
+  "scope": "AEGS lifecycle documentation and optional SQLite event journal mirror",
+  "alternatives": "Retain JSONL-only ledger and defer durable journal design",
+  "impact": "Adds a local audit mirror and verification commands; JSONL remains the authoritative ledger during pilot",
+  "counter_evidence": "Dual persistence can introduce drift and must not be marketed as atomic or tamper-proof",
+  "acceptance_criteria": "Journal imports existing ledger, verifies hash chain, detects JSONL drift, and full-loop design distinguishes candidate from approved capability",
+  "expires_at": null,
+  "evidence_refs": [
+    "USR-20261115 and AEP ecosystem review: user requested full-loop and open ecosystem design"
+  ],
+  "rollback_reference": "Revert the journal pilot commit, retain JSONL ledger, and regenerate AEGS discovery and handoff.",
+  "decision": "HD-cef0b72520fa"
+}

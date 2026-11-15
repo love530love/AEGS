@@ -1,10 +1,10 @@
 {
-  "handoff_id": "HO-78c816d77e6b",
-  "created_at": "2026-11-15T10:56:41Z",
+  "handoff_id": "HO-fdb8b8ba1ed4",
+  "created_at": "2026-11-15T11:10:34Z",
   "project_id": "AEGS",
   "charter_version": "0.1.0",
   "verified_facts": [
-    "Read-only architecture snapshot AS-a1cdf63d5f88 created for Git 00fbcc8f6b7a1c7f9108bb957503ac766cf26bd9."
+    "Read-only architecture snapshot AS-ea841e4695e9 created for Git 6cadbfc6f3ccc7cc5e32a95ac635075b4fadf93a."
   ],
   "unverified_claims": [],
   "current_goal": "Review the architecture snapshot, resolve critical unknowns, and create evidence-backed improvement proposals.",
@@ -12,7 +12,7 @@
     "Static discovery is not runtime proof; external services and undocumented dependencies require human confirmation.",
     "Sensitive files are intentionally excluded from discovery content."
   ],
-  "architecture_snapshot": "AS-a1cdf63d5f88",
+  "architecture_snapshot": "AS-ea841e4695e9",
   "unresolved_questions": [
     "Which inferred relationships are business-critical?",
     "Which external systems, production constraints, and undocumented dependencies are missing?",
@@ -25,20 +25,20 @@
   "verification": {
     "ok": true,
     "root": "F:\\PythonProjects1\\AEGS",
-    "git_head": "00fbcc8f6b7a1c7f9108bb957503ac766cf26bd9",
-    "ledger_events": 17,
+    "git_head": "6cadbfc6f3ccc7cc5e32a95ac635075b4fadf93a",
+    "ledger_events": 21,
     "ledger_status": "ok",
     "errors": []
   },
   "evidence_binding": {
     "code_fingerprint": {
       "git_available": true,
-      "head": "00fbcc8f6b7a1c7f9108bb957503ac766cf26bd9",
-      "tracked_content_hash": "2f2e6928dce0995299af563b2857343e2737de51515df90e09dc537ae487f750",
+      "head": "6cadbfc6f3ccc7cc5e32a95ac635075b4fadf93a",
+      "tracked_content_hash": "9bdf17fe55222d870cae084e8a145637e55a3cb72ad95c184cd5058cfce86950",
       "dirty_non_governance": false
     },
-    "ledger_head": "4f0ea93cbb00e610d21e477ebdd80fdbee3dcb833d7597635931c597c1edc345",
-    "architecture_snapshot_hash": "e40f5f9bfb0be5967364e8abfedd86727e20f2521d7f445f258d0311bc98b982",
-    "generated_at": "2026-11-15T10:56:41Z"
+    "ledger_head": "a7d2170a0dcb2f3d3ece0462bbc5206dac53f6a17c5e2c95e6afbe5f081901e2",
+    "architecture_snapshot_hash": "826d138afd0d9aa76fb700c727a045e2a35993327019dbaeb7860bf7f6fc1e5b",
+    "generated_at": "2026-11-15T11:10:35Z"
   }
 }
