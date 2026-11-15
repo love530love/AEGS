@@ -249,8 +249,12 @@ def create_proposal(
     risk = risk.upper()
     if risk not in {"GREEN", "YELLOW", "RED"}:
         raise AEGSError("risk must be GREEN, YELLOW, or RED")
-    if expires_at:
-        _parse_expiry(expires_at)
+    parsed_expiry = _parse_expiry(expires_at) if expires_at else None
+    if risk in {"YELLOW", "RED"}:
+        if not parsed_expiry:
+            raise AEGSError("YELLOW/RED proposal creation requires expires_at with a timezone")
+        if parsed_expiry <= datetime.now(timezone.utc):
+            raise AEGSError("YELLOW/RED proposal expires_at must be in the future")
     proposal_id = f"PR-{uuid.uuid4().hex[:12]}"
     proposal = {
         "proposal_id": proposal_id,

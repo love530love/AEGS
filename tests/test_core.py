@@ -35,17 +35,19 @@ class GovernanceCoreTests(unittest.TestCase):
         self.assertEqual(directive["action"], "APPROVE")
 
     def test_yellow_approval_requires_structured_proposal(self):
-        proposal = create_proposal(self.root, "Incomplete", "YELLOW", "agent")
+        proposal = create_proposal(self.root, "Incomplete", "YELLOW", "agent", expires_at="2099-01-01T00:00:00Z")
         with self.assertRaises(AEGSError):
             decide(self.root, proposal["proposal_id"], "APPROVE", "owner@example.test", "EXP-1", "v0.1", "Try it")
 
-    def test_expired_yellow_proposal_cannot_be_approved(self):
-        proposal = create_proposal(
-            self.root, "Expired", "YELLOW", "agent", scope="Test", alternatives="None", impact="None",
-            counter_evidence="Unknown", acceptance_criteria="Pass", expires_at="2000-01-01T00:00:00Z",
-        )
+    def test_yellow_creation_rejects_missing_naive_and_expired_expiry(self):
         with self.assertRaises(AEGSError):
-            decide(self.root, proposal["proposal_id"], "APPROVE", "owner@example.test", "EXP-1", "v0.1", "Expired test")
+            create_proposal(self.root, "Missing", "YELLOW", "agent")
+        with self.assertRaises(AEGSError):
+            create_proposal(self.root, "Naive", "YELLOW", "agent", expires_at="2099-01-01T00:00:00")
+        with self.assertRaises(AEGSError):
+            create_proposal(self.root, "Expired", "YELLOW", "agent", expires_at="2000-01-01T00:00:00Z")
+        green = create_proposal(self.root, "Green remains optional", "GREEN", "agent")
+        self.assertIsNone(green["expires_at"])
 
     def test_ledger_tampering_is_detected(self):
         ledger = self.root / ".aegs" / "ledger.jsonl"
@@ -100,6 +102,16 @@ class GovernanceCoreTests(unittest.TestCase):
         self.assertEqual(takeover(self.root)["status"], "PASS")
         source.write_text("two", encoding="utf-8")
         self.assertEqual(takeover(self.root)["status"], "STALE")
+
+    def test_non_git_fingerprint_does_not_exclude_parent_directory_by_name(self):
+        sensitive_named_parent = self.root / "secrets"
+        sensitive_named_parent.mkdir()
+        source = sensitive_named_parent / "app.py"
+        source.write_text("one", encoding="utf-8")
+        first = code_fingerprint(self.root)["tracked_content_hash"]
+        source.write_text("two", encoding="utf-8")
+        second = code_fingerprint(self.root)["tracked_content_hash"]
+        self.assertNotEqual(first, second)
 
     def test_corrupt_ledger_blocks_governance_writes(self):
         ledger = self.root / ".aegs" / "ledger.jsonl"
