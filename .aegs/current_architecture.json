@@ -1,10 +1,10 @@
 {
-  "snapshot_id": "AS-7f80ffae623d",
+  "snapshot_id": "AS-df11b30d8b75",
   "schema_version": "0.1",
-  "created_at": "2026-09-12T10:57:58Z",
+  "created_at": "2026-11-15T09:39:27Z",
   "root": "F:\\PythonProjects1\\AEGS",
-  "git_head": "6a2badbbe0d4c82e029877c28dd4c55ef49d5e6a",
-  "working_tree_dirty": true,
+  "git_head": "5fa1e9f4cbc79962677421fee19a69d168ef61c0",
+  "working_tree_dirty": false,
   "discovery_mode": "read_only",
   "files": [
     {
@@ -14,12 +14,17 @@
     },
     {
       "path": "pyproject.toml",
-      "size_bytes": 345,
+      "size_bytes": 415,
       "category": "dependency_manifest"
     },
     {
       "path": "README.md",
-      "size_bytes": 3695,
+      "size_bytes": 4362,
+      "category": "documentation"
+    },
+    {
+      "path": ".ai-bridge/codexpro-self-test.md",
+      "size_bytes": 105,
       "category": "documentation"
     },
     {
@@ -55,6 +60,16 @@
     {
       "path": "decisions/ADR-0002-aegs-control-plane-and-human-governance.md",
       "size_bytes": 790,
+      "category": "documentation"
+    },
+    {
+      "path": "decisions/ADR-0003-trusted-takeover-before-autonomy.md",
+      "size_bytes": 813,
+      "category": "documentation"
+    },
+    {
+      "path": "decisions/ADR-0006-domain-model-v0.2.md",
+      "size_bytes": 3291,
       "category": "documentation"
     },
     {
@@ -128,13 +143,23 @@
       "category": "documentation"
     },
     {
+      "path": "docs/14-evolution-council-review-2026-11-15.md",
+      "size_bytes": 2834,
+      "category": "documentation"
+    },
+    {
+      "path": "docs/19-domain-model-v0.2.md",
+      "size_bytes": 8280,
+      "category": "documentation"
+    },
+    {
       "path": "tests/test_core.py",
-      "size_bytes": 3238,
+      "size_bytes": 3589,
       "category": "test"
     },
     {
       "path": "src/aegs/cli.py",
-      "size_bytes": 3553,
+      "size_bytes": 3824,
       "category": "source"
     },
     {
@@ -144,12 +169,12 @@
     },
     {
       "path": "src/aegs/core.py",
-      "size_bytes": 13553,
+      "size_bytes": 17976,
       "category": "source"
     },
     {
       "path": "src/aegs/discovery.py",
-      "size_bytes": 7560,
+      "size_bytes": 7691,
       "category": "source"
     },
     {
@@ -176,7 +201,7 @@
   "category_counts": {
     "other": 1,
     "dependency_manifest": 1,
-    "documentation": 25,
+    "documentation": 30,
     "test": 1,
     "source": 5
   },
@@ -379,45 +404,52 @@
     },
     {
       "source": "src/aegs/discovery.py",
-      "target": "subprocess",
+      "target": "hashlib",
       "relation": "imports",
       "confidence": "inferred",
       "evidence": "src/aegs/discovery.py:4"
     },
     {
       "source": "src/aegs/discovery.py",
-      "target": "uuid",
+      "target": "subprocess",
       "relation": "imports",
       "confidence": "inferred",
       "evidence": "src/aegs/discovery.py:5"
     },
     {
       "source": "src/aegs/discovery.py",
-      "target": "datetime",
+      "target": "uuid",
       "relation": "imports",
       "confidence": "inferred",
       "evidence": "src/aegs/discovery.py:6"
     },
     {
       "source": "src/aegs/discovery.py",
-      "target": "pathlib",
+      "target": "datetime",
       "relation": "imports",
       "confidence": "inferred",
       "evidence": "src/aegs/discovery.py:7"
     },
     {
       "source": "src/aegs/discovery.py",
-      "target": "typing",
+      "target": "pathlib",
       "relation": "imports",
       "confidence": "inferred",
       "evidence": "src/aegs/discovery.py:8"
     },
     {
       "source": "src/aegs/discovery.py",
+      "target": "typing",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/discovery.py:9"
+    },
+    {
+      "source": "src/aegs/discovery.py",
       "target": ".core",
       "relation": "imports",
       "confidence": "inferred",
-      "evidence": "src/aegs/discovery.py:10"
+      "evidence": "src/aegs/discovery.py:11"
     }
   ],
   "known_limits": [
@@ -431,5 +463,6 @@
     "Which inferred relationships are business-critical?",
     "Which external systems, production constraints, and undocumented dependencies are missing?",
     "Which components may not be changed without explicit owner approval?"
-  ]
+  ],
+  "content_hash": "5e04d991760b321470fb326650cc20cd5ab9564be2a290944155921e9c60e166"
 }
