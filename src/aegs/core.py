@@ -292,6 +292,14 @@ def _parse_expiry(value: str) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
+def _required_approvals(risk: str) -> list[str]:
+    if risk == "YELLOW":
+        return ["owner"]
+    if risk == "RED":
+        return ["owner", "independent_reviewer"]
+    return []
+
+
 def create_proposal(
     root_value: str | Path,
     title: str,
@@ -332,6 +340,7 @@ def create_proposal(
         "counter_evidence": counter_evidence,
         "acceptance_criteria": acceptance_criteria,
         "expires_at": expires_at,
+        "required_approvals": _required_approvals(risk),
         "evidence_refs": [],
         "rollback_reference": None,
         "decision": None,
@@ -349,6 +358,7 @@ def decide(
     evidence: str | None,
     rollback: str | None,
     reason: str | None = None,
+    independent_reviewer: str | None = None,
 ) -> dict[str, Any]:
     root = project_dir(root_value)
     require_valid_governance(root)
@@ -369,8 +379,21 @@ def decide(
             raise AEGSError("YELLOW/RED approval requires structured proposal fields: " + ", ".join(missing_fields))
         if not evidence or not rollback or not reason:
             raise AEGSError("YELLOW/RED approval requires evidence, rollback, and decision reason")
+        required_approvals = _required_approvals(proposal["risk"])
+        if proposal.get("required_approvals") != required_approvals:
+            raise AEGSError("YELLOW/RED approval lacks the required approval policy record")
         if _parse_expiry(proposal["expires_at"]) <= datetime.now(timezone.utc):
             raise AEGSError("YELLOW/RED proposal has expired and cannot be approved")
+        if approver == proposal.get("proposer"):
+            raise AEGSError("YELLOW/RED approval requires an owner independent from the proposer")
+        if proposal["risk"] == "RED":
+            reviewers = charter.get("independent_reviewers", [])
+            if not independent_reviewer:
+                raise AEGSError("RED approval requires an independent reviewer approval")
+            if not isinstance(reviewers, list) or independent_reviewer not in reviewers:
+                raise AEGSError("RED independent reviewer is not qualified by the Charter")
+            if independent_reviewer in {approver, proposal.get("proposer")}:
+                raise AEGSError("RED independent reviewer must differ from the owner approver and proposer")
     directive_id = f"HD-{uuid.uuid4().hex[:12]}"
     directive = {
         "directive_id": directive_id,
@@ -382,6 +405,7 @@ def decide(
         "evidence": evidence,
         "rollback_reference": rollback,
         "reason": reason,
+        "independent_reviewer": independent_reviewer,
         "created_at": now_utc(),
     }
     write_json(governance_dir(root) / "directives" / f"{directive_id}.json", directive)
@@ -390,7 +414,7 @@ def decide(
     proposal["rollback_reference"] = rollback
     proposal["decision"] = directive_id
     write_json(proposal_path, proposal)
-    append_event(root, "human.decision.recorded", {"proposal_id": proposal_id, "directive_id": directive_id, "action": action, "approver": approver, "reason": reason})
+    append_event(root, "human.decision.recorded", {"proposal_id": proposal_id, "directive_id": directive_id, "action": action, "approver": approver, "independent_reviewer": independent_reviewer, "reason": reason})
     return directive
 
 

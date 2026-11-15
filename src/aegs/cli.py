@@ -75,6 +75,7 @@ def parser() -> argparse.ArgumentParser:
     decision.add_argument("--evidence")
     decision.add_argument("--rollback")
     decision.add_argument("--reason")
+    decision.add_argument("--independent-reviewer", help="required Charter-qualified reviewer for RED approval")
     server = commands.add_parser("serve", help="run the local Human Governance Console")
     server.add_argument("path", nargs="?", default=".")
     server.add_argument("--port", type=int, default=8080)
@@ -126,7 +127,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "proposal" and args.proposal_command == "create":
             result = create_proposal(args.path, args.title, args.risk, args.proposer, args.scope, args.alternatives, args.impact, args.counter_evidence, args.acceptance_criteria, args.expires_at)
         else:
-            result = decide(args.path, args.proposal, args.action, args.approver, args.evidence, args.rollback, args.reason)
+            result = decide(args.path, args.proposal, args.action, args.approver, args.evidence, args.rollback, args.reason, args.independent_reviewer)
     except AEGSError as error:
         print(f"AEGS error: {error}", file=sys.stderr)
         return 2

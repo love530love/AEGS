@@ -1,0 +1,20 @@
+{
+  "proposal_id": "PR-b22305bd9a6e",
+  "status": "APPROVED",
+  "title": "Execute high-risk approval gates",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-15T14:01:24Z",
+  "baseline_git_head": "0a1ecb704da93336b1edd19ad042d4b3dc0a0e31",
+  "scope": "Enforce YELLOW/RED approval requirements inside decide, including independent RED review",
+  "alternatives": "Leave approval policy as descriptive metadata or weaken RED to a single owner decision",
+  "impact": "High-risk proposals fail closed when expiry, approval records, or reviewer qualification are invalid",
+  "counter_evidence": "Local named identities are self-declared and do not provide production authentication",
+  "acceptance_criteria": "Expired, naive, missing approval, and unqualified reviewer fail; valid high-risk approval succeeds; GREEN semantics remain",
+  "expires_at": "2026-12-15T23:59:59Z",
+  "evidence_refs": [
+    "AEP-NL-20261115-2005-06"
+  ],
+  "rollback_reference": "Revert the high-risk decide gate commit; retain existing proposal records as historical evidence.",
+  "decision": "HD-cd8f5eeca5aa"
+}

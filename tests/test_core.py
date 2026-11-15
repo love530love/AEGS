@@ -124,6 +124,44 @@ class GovernanceCoreTests(unittest.TestCase):
         green = create_proposal(self.root, "Green remains optional", "GREEN", "agent")
         self.assertIsNone(green["expires_at"])
 
+    def test_decide_rejects_expired_and_naive_high_risk_expiry(self):
+        proposal = create_proposal(
+            self.root, "Expiry enforcement", "YELLOW", "agent", scope="Scope", alternatives="Alternative",
+            impact="Impact", counter_evidence="Counter", acceptance_criteria="Accept", expires_at="2099-01-01T00:00:00Z",
+        )
+        path = self.root / ".aegs" / "proposals" / f"{proposal['proposal_id']}.json"
+        stored = json.loads(path.read_text(encoding="utf-8"))
+        stored["expires_at"] = "2000-01-01T00:00:00Z"
+        path.write_text(json.dumps(stored), encoding="utf-8")
+        with self.assertRaises(AEGSError):
+            decide(self.root, proposal["proposal_id"], "APPROVE", "owner@example.test", "EV-1", "rollback", "reason")
+        stored["expires_at"] = "2099-01-01T00:00:00"
+        path.write_text(json.dumps(stored), encoding="utf-8")
+        with self.assertRaises(AEGSError):
+            decide(self.root, proposal["proposal_id"], "APPROVE", "owner@example.test", "EV-1", "rollback", "reason")
+
+    def test_red_decide_rejects_missing_or_unqualified_independent_approval(self):
+        charter_path = self.root / ".aegs" / "charter.json"
+        charter = json.loads(charter_path.read_text(encoding="utf-8"))
+        charter["independent_reviewers"] = ["reviewer@example.test"]
+        charter_path.write_text(json.dumps(charter), encoding="utf-8")
+        proposal = create_proposal(
+            self.root, "Red gate", "RED", "agent", scope="Scope", alternatives="Alternative",
+            impact="Impact", counter_evidence="Counter", acceptance_criteria="Accept", expires_at="2099-01-01T00:00:00Z",
+        )
+        with self.assertRaises(AEGSError):
+            decide(self.root, proposal["proposal_id"], "APPROVE", "owner@example.test", "EV-1", "rollback", "reason")
+        with self.assertRaises(AEGSError):
+            decide(self.root, proposal["proposal_id"], "APPROVE", "owner@example.test", "EV-1", "rollback", "reason", "unqualified@example.test")
+        directive = decide(self.root, proposal["proposal_id"], "APPROVE", "owner@example.test", "EV-1", "rollback", "reason", "reviewer@example.test")
+        self.assertEqual(directive["action"], "APPROVE")
+        self.assertEqual(directive["independent_reviewer"], "reviewer@example.test")
+
+    def test_green_decide_keeps_existing_owner_only_semantics(self):
+        proposal = create_proposal(self.root, "Green gate", "GREEN", "agent")
+        directive = decide(self.root, proposal["proposal_id"], "APPROVE", "owner@example.test", None, None)
+        self.assertEqual(directive["action"], "APPROVE")
+
     def test_ledger_tampering_is_detected(self):
         ledger = self.root / ".aegs" / "ledger.jsonl"
         ledger.write_text(ledger.read_text(encoding="utf-8").replace("governance.initialised", "tampered"), encoding="utf-8")

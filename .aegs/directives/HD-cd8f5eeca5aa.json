@@ -1,0 +1,12 @@
+{
+  "directive_id": "HD-cd8f5eeca5aa",
+  "kind": "decision",
+  "scope": "project",
+  "proposal_id": "PR-b22305bd9a6e",
+  "action": "APPROVE",
+  "approver": "love530love",
+  "evidence": "AEP-NL-20261115-2005-06",
+  "rollback_reference": "Revert the high-risk decide gate commit; retain existing proposal records as historical evidence.",
+  "reason": "Approval policy must be executable at the decision boundary, not merely described in documents.",
+  "created_at": "2026-11-15T14:01:31Z"
+}
