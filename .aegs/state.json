@@ -4,7 +4,7 @@
   "charter_version": "0.1.0",
   "current_goal": "Review the architecture snapshot, resolve critical unknowns, and create evidence-backed improvement proposals.",
   "verified_facts": [
-    "Read-only architecture snapshot AS-c5d5afbfcf73 created for Git a2e2e9ff4c252964d947bfc147ec8bc1761555d0."
+    "Read-only architecture snapshot AS-2d8f9a0f266d created for Git b85b9acee6f8843214a42facc76dd2ffd1c22484."
   ],
   "unverified_claims": [],
   "open_risks": [
@@ -15,9 +15,9 @@
     "Review the current architecture snapshot and confirm or correct unresolved questions.",
     "Create a governed proposal before changing project behavior."
   ],
-  "current_git_head": "a2e2e9ff4c252964d947bfc147ec8bc1761555d0",
-  "architecture_snapshot": "AS-c5d5afbfcf73",
-  "architecture_snapshot_git_head": "a2e2e9ff4c252964d947bfc147ec8bc1761555d0",
+  "current_git_head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
+  "architecture_snapshot": "AS-2d8f9a0f266d",
+  "architecture_snapshot_git_head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
   "unresolved_questions": [
     "Which inferred relationships are business-critical?",
     "Which external systems, production constraints, and undocumented dependencies are missing?",
@@ -25,8 +25,8 @@
   ],
   "current_code_fingerprint": {
     "git_available": true,
-    "head": "a2e2e9ff4c252964d947bfc147ec8bc1761555d0",
-    "tracked_content_hash": "5eddd3490d63307f32284a2eb17f5713faee85ea4fef105a9222dc699600f358",
+    "head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
+    "tracked_content_hash": "aed1c18fabceaa48f886948df266f91ad73fd39a07fe054a64909c7193a9d53f",
     "dirty_non_governance": false,
     "source": "git_index"
   }

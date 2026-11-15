@@ -1,0 +1,57 @@
+{
+  "handoff_id": "HO-8642287d2180",
+  "created_at": "2026-11-15T12:36:15Z",
+  "project_id": "AEGS",
+  "charter_version": "0.1.0",
+  "verified_facts": [
+    "Read-only architecture snapshot AS-2d8f9a0f266d created for Git b85b9acee6f8843214a42facc76dd2ffd1c22484."
+  ],
+  "unverified_claims": [],
+  "current_goal": "Review the architecture snapshot, resolve critical unknowns, and create evidence-backed improvement proposals.",
+  "open_risks": [
+    "Static discovery is not runtime proof; external services and undocumented dependencies require human confirmation.",
+    "Sensitive files are intentionally excluded from discovery content."
+  ],
+  "architecture_snapshot": "AS-2d8f9a0f266d",
+  "unresolved_questions": [
+    "Which inferred relationships are business-critical?",
+    "Which external systems, production constraints, and undocumented dependencies are missing?",
+    "Which components may not be changed without explicit owner approval?"
+  ],
+  "safe_next_actions": [
+    "Review the current architecture snapshot and confirm or correct unresolved questions.",
+    "Create a governed proposal before changing project behavior."
+  ],
+  "verification": {
+    "ok": true,
+    "root": "F:\\PythonProjects1\\AEGS",
+    "git_head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
+    "ledger_events": 45,
+    "ledger_status": "ok",
+    "errors": []
+  },
+  "state_binding": {
+    "current_git_head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
+    "current_code_fingerprint": {
+      "git_available": true,
+      "head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
+      "tracked_content_hash": "aed1c18fabceaa48f886948df266f91ad73fd39a07fe054a64909c7193a9d53f",
+      "dirty_non_governance": false,
+      "source": "git_index"
+    }
+  },
+  "evidence_binding": {
+    "code_fingerprint": {
+      "git_available": true,
+      "head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
+      "tracked_content_hash": "aed1c18fabceaa48f886948df266f91ad73fd39a07fe054a64909c7193a9d53f",
+      "dirty_non_governance": false,
+      "source": "git_index"
+    },
+    "ledger_head_before_handoff": "f796a25cd83315c8a3ef202b996d8996cd020811882c325a928077d51d14495b",
+    "architecture_snapshot_hash": "5e4e9af6a6e0cbc413e1c8f256b723630c14446627241f06949c885df004ed89",
+    "generated_at": "2026-11-15T12:36:15Z",
+    "handoff_event_hash": "9eecd708b5f08d60abf0f2c7af80479b7bc2327f7c93eff4567f8633c2faf353"
+  },
+  "handoff_hash": "31b09c78ae7fc7a44c08c956ae2b0635958a286f67aeb607f63f600aae8a55c8"
+}
