@@ -54,12 +54,31 @@ def git_head(root: Path) -> str | None:
     return result.stdout.strip() if result.returncode == 0 else None
 
 
+def _safe_filesystem_fingerprint(root: Path) -> str:
+    """Content fingerprint for non-Git projects, excluding governance and likely secrets."""
+    excluded_directories = {".git", ".aegs", ".venv", "venv", "node_modules", "__pycache__", ".pytest_cache"}
+    sensitive_suffixes = {".pem", ".key", ".p12", ".pfx"}
+    entries: list[str] = []
+    for path in root.rglob("*"):
+        if not path.is_file() or any(part in excluded_directories for part in path.relative_to(root).parts):
+            continue
+        name = path.name.lower()
+        if name.startswith(".env") or name in {"secrets", "credentials", "id_rsa", "id_ed25519"} or path.suffix.lower() in sensitive_suffixes:
+            continue
+        try:
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+            entries.append(f"{path.relative_to(root).as_posix()}:{digest}")
+        except OSError:
+            entries.append(f"{path.relative_to(root).as_posix()}:unreadable")
+    return hashlib.sha256("\n".join(sorted(entries)).encode("utf-8")).hexdigest()
+
+
 def code_fingerprint(root: Path) -> dict[str, Any]:
     """Hash Git-indexed project content while excluding AEGS's own runtime records."""
     tracked = subprocess.run(["git", "ls-files", "-s"], cwd=root, text=True, capture_output=True, check=False)
     status = subprocess.run(["git", "status", "--porcelain"], cwd=root, text=True, capture_output=True, check=False)
     if tracked.returncode != 0 or status.returncode != 0:
-        return {"git_available": False, "head": None, "tracked_content_hash": None, "dirty_non_governance": None}
+        return {"git_available": False, "head": None, "tracked_content_hash": _safe_filesystem_fingerprint(root), "dirty_non_governance": False, "source": "filesystem_safe_hash"}
     tracked_lines = [line for line in tracked.stdout.splitlines() if "\t.aegs/" not in line]
     dirty_lines = [line for line in status.stdout.splitlines() if ".aegs/" not in line.replace("\\", "/")]
     return {
@@ -67,6 +86,7 @@ def code_fingerprint(root: Path) -> dict[str, Any]:
         "head": git_head(root),
         "tracked_content_hash": hashlib.sha256("\n".join(tracked_lines).encode("utf-8")).hexdigest(),
         "dirty_non_governance": bool(dirty_lines),
+        "source": "git_index",
     }
 
 
@@ -194,6 +214,22 @@ def verify(root_value: str | Path) -> dict[str, Any]:
     }
 
 
+def require_valid_governance(root: Path) -> None:
+    check = verify(root)
+    if not check["ok"]:
+        raise AEGSError("Governance verification failed; write operation blocked: " + "; ".join(check["errors"]))
+
+
+def _parse_expiry(value: str) -> datetime:
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as error:
+        raise AEGSError("expires_at must be an ISO-8601 timestamp") from error
+    if parsed.tzinfo is None:
+        raise AEGSError("expires_at must include a timezone")
+    return parsed.astimezone(timezone.utc)
+
+
 def create_proposal(
     root_value: str | Path,
     title: str,
@@ -213,6 +249,8 @@ def create_proposal(
     risk = risk.upper()
     if risk not in {"GREEN", "YELLOW", "RED"}:
         raise AEGSError("risk must be GREEN, YELLOW, or RED")
+    if expires_at:
+        _parse_expiry(expires_at)
     proposal_id = f"PR-{uuid.uuid4().hex[:12]}"
     proposal = {
         "proposal_id": proposal_id,
@@ -247,6 +285,7 @@ def decide(
     reason: str | None = None,
 ) -> dict[str, Any]:
     root = project_dir(root_value)
+    require_valid_governance(root)
     charter = read_json(governance_dir(root) / "charter.json")
     if approver not in charter.get("owners", []):
         raise AEGSError("Only a named project owner may record a human decision in this prototype")
@@ -258,12 +297,14 @@ def decide(
     if proposal["status"] != "DRAFT":
         raise AEGSError("Only DRAFT proposals may receive an initial decision")
     if action == "APPROVE" and proposal["risk"] in {"YELLOW", "RED"}:
-        required_fields = ("scope", "alternatives", "impact", "counter_evidence", "acceptance_criteria")
+        required_fields = ("scope", "alternatives", "impact", "counter_evidence", "acceptance_criteria", "expires_at")
         missing_fields = [field for field in required_fields if not proposal.get(field)]
         if missing_fields:
             raise AEGSError("YELLOW/RED approval requires structured proposal fields: " + ", ".join(missing_fields))
         if not evidence or not rollback or not reason:
             raise AEGSError("YELLOW/RED approval requires evidence, rollback, and decision reason")
+        if _parse_expiry(proposal["expires_at"]) <= datetime.now(timezone.utc):
+            raise AEGSError("YELLOW/RED proposal has expired and cannot be approved")
     directive_id = f"HD-{uuid.uuid4().hex[:12]}"
     directive = {
         "directive_id": directive_id,
@@ -312,13 +353,15 @@ def create_handoff(root_value: str | Path) -> dict[str, Any]:
         "safe_next_actions": state.get("safe_next_actions", []),
         "verification": check,
     }
-    append_event(root, "handoff.created", {"handoff_id": handoff_id, "architecture_snapshot": snapshot_id})
     handoff["evidence_binding"] = {
         "code_fingerprint": code_fingerprint(root),
-        "ledger_head": ledger_head(root),
+        "ledger_head_before_handoff": ledger_head(root),
         "architecture_snapshot_hash": document_hash(snapshot) if snapshot else None,
         "generated_at": now_utc(),
     }
+    handoff["handoff_hash"] = document_hash(_handoff_hash_payload(handoff))
+    handoff_event = append_event(root, "handoff.created", {"handoff_id": handoff_id, "handoff_hash": handoff["handoff_hash"], "architecture_snapshot": snapshot_id})
+    handoff["evidence_binding"]["handoff_event_hash"] = handoff_event["event_hash"]
     write_json(governance_dir(root) / "handoffs" / f"{handoff_id}.json", handoff)
     write_json(governance_dir(root) / "current_handoff.json", handoff)
     markdown = "\n".join([
@@ -351,6 +394,25 @@ def create_handoff(root_value: str | Path) -> dict[str, Any]:
     return handoff
 
 
+def _handoff_hash_payload(handoff: dict[str, Any]) -> dict[str, Any]:
+    payload = json.loads(canonical_json(handoff))
+    payload.pop("handoff_hash", None)
+    payload.get("evidence_binding", {}).pop("handoff_event_hash", None)
+    return payload
+
+
+def _find_handoff_event(root: Path, handoff_id: str, handoff_hash: str) -> dict[str, Any] | None:
+    ledger = governance_dir(root) / "ledger.jsonl"
+    for line in ledger.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        event = json.loads(line)
+        payload = event.get("payload", {})
+        if event.get("event_type") == "handoff.created" and payload.get("handoff_id") == handoff_id and payload.get("handoff_hash") == handoff_hash:
+            return event
+    return None
+
+
 def takeover(root_value: str | Path) -> dict[str, Any]:
     """Determine whether an Agent may safely proceed beyond read-only orientation."""
     root = project_dir(root_value)
@@ -366,7 +428,25 @@ def takeover(root_value: str | Path) -> dict[str, Any]:
     if not binding:
         return {"status": "STALE", "may_act": False, "reasons": ["Handoff has no evidence binding; regenerate it."], "safe_next_actions": ["Run 'aegs handoff <project>'."]}
     reasons: list[str] = []
-    if binding.get("ledger_head") != ledger_head(root):
+    stored_path = governance_dir(root) / "handoffs" / f"{handoff.get('handoff_id')}.json"
+    try:
+        stored_handoff = read_json(stored_path)
+        if canonical_json(stored_handoff) != canonical_json(handoff):
+            reasons.append("Current handoff differs from its immutable handoff record.")
+    except AEGSError:
+        reasons.append("Referenced immutable handoff record is missing.")
+    expected_handoff_hash = document_hash(_handoff_hash_payload(handoff))
+    if handoff.get("handoff_hash") != expected_handoff_hash:
+        reasons.append("Handoff self-hash is invalid.")
+    handoff_event = _find_handoff_event(root, str(handoff.get("handoff_id")), str(handoff.get("handoff_hash")))
+    if not handoff_event:
+        reasons.append("No ledger event attests to this handoff hash.")
+    else:
+        if handoff_event.get("previous_hash") != binding.get("ledger_head_before_handoff"):
+            reasons.append("Handoff ledger predecessor does not match its evidence binding.")
+        if binding.get("handoff_event_hash") != handoff_event.get("event_hash") or ledger_head(root) != handoff_event.get("event_hash"):
+            reasons.append("Event ledger changed after the handoff was generated.")
+    if not binding.get("handoff_event_hash"):
         reasons.append("Event ledger changed after the handoff was generated.")
     if not same_code_fingerprint(binding.get("code_fingerprint"), code_fingerprint(root)):
         reasons.append("Project code fingerprint changed after the handoff was generated.")
@@ -437,6 +517,7 @@ def record_feedback(
     confirmed: bool,
 ) -> dict[str, Any]:
     root = project_dir(root_value)
+    require_valid_governance(root)
     charter = read_json(governance_dir(root) / "charter.json")
     allowed_kinds = {"preference", "constraint", "fact_correction", "hypothesis"}
     allowed_scopes = {"task", "project", "project_group", "global_candidate"}

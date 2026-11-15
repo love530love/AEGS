@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .core import AEGSError, append_event, canonical_json, git_head, governance_dir, project_dir, read_json, write_json
+from .core import AEGSError, append_event, canonical_json, git_head, governance_dir, project_dir, read_json, require_valid_governance, write_json
 
 
 EXCLUDED_DIRECTORIES = {".git", ".aegs", ".venv", "venv", "node_modules", "__pycache__", ".pytest_cache"}
@@ -88,6 +88,7 @@ def discover(root_value: str | Path, max_files: int = 5000) -> dict[str, Any]:
     root = project_dir(root_value)
     if not (root / ".aegs" / "charter.json").exists():
         raise AEGSError("Run 'aegs init' before discovering a project")
+    require_valid_governance(root)
     files: list[dict[str, Any]] = []
     relationships: list[dict[str, Any]] = []
     excluded_sensitive = 0
