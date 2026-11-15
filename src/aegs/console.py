@@ -34,6 +34,7 @@ def render_console(root: Path, notice: str = "") -> str:
 <label>Owner <select name='approver'>{''.join(f"<option>{escape(owner)}</option>" for owner in charter['owners'])}</select></label>
 <label>Evidence reference <input name='evidence' placeholder='Required to approve YELLOW/RED'></label>
 <label>Rollback reference <input name='rollback' placeholder='Required to approve YELLOW/RED'></label>
+<label>Decision reason <input name='reason' placeholder='Required to approve YELLOW/RED'></label>
 <div class='actions'><button name='action' value='APPROVE'>Approve</button><button name='action' value='REJECT'>Reject</button><button name='action' value='DEFER'>Defer</button><button name='action' value='HOLD'>Freeze candidate</button></div>
 </form></article>"""
         )
@@ -81,7 +82,7 @@ def serve(root_value: str | Path, port: int) -> None:
             values = parse_qs(self.rfile.read(length).decode("utf-8"), keep_blank_values=True)
             try:
                 if self.path == "/decision":
-                    decide(root, _field(values, "proposal_id") or "", _field(values, "action") or "", _field(values, "approver") or "", _field(values, "evidence"), _field(values, "rollback"))
+                    decide(root, _field(values, "proposal_id") or "", _field(values, "action") or "", _field(values, "approver") or "", _field(values, "evidence"), _field(values, "rollback"), _field(values, "reason"))
                     message = "Decision recorded in the event ledger."
                 elif self.path == "/feedback":
                     record_feedback(root, _field(values, "author") or "", _field(values, "kind") or "", _field(values, "scope") or "", _field(values, "duration") or "", _field(values, "confidence") or "", _field(values, "source_text") or "", _field(values, "confirmed") == "yes")

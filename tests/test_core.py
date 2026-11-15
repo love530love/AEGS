@@ -22,11 +22,20 @@ class GovernanceCoreTests(unittest.TestCase):
         self.assertTrue((self.root / ".aegs" / "current_handoff.json").exists())
 
     def test_yellow_approval_requires_evidence_and_rollback(self):
-        proposal = create_proposal(self.root, "Test candidate", "YELLOW", "agent")
+        proposal = create_proposal(
+            self.root, "Test candidate", "YELLOW", "agent",
+            scope="Test only", alternatives="Keep baseline", impact="No production impact",
+            counter_evidence="No transfer evidence", acceptance_criteria="All tests pass",
+        )
         with self.assertRaises(AEGSError):
             decide(self.root, proposal["proposal_id"], "APPROVE", "owner@example.test", None, None)
-        directive = decide(self.root, proposal["proposal_id"], "APPROVE", "owner@example.test", "EXP-1", "v0.1")
+        directive = decide(self.root, proposal["proposal_id"], "APPROVE", "owner@example.test", "EXP-1", "v0.1", "Evidence supports isolated test")
         self.assertEqual(directive["action"], "APPROVE")
+
+    def test_yellow_approval_requires_structured_proposal(self):
+        proposal = create_proposal(self.root, "Incomplete", "YELLOW", "agent")
+        with self.assertRaises(AEGSError):
+            decide(self.root, proposal["proposal_id"], "APPROVE", "owner@example.test", "EXP-1", "v0.1", "Try it")
 
     def test_ledger_tampering_is_detected(self):
         ledger = self.root / ".aegs" / "ledger.jsonl"

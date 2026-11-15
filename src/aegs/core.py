@@ -194,7 +194,18 @@ def verify(root_value: str | Path) -> dict[str, Any]:
     }
 
 
-def create_proposal(root_value: str | Path, title: str, risk: str, proposer: str) -> dict[str, Any]:
+def create_proposal(
+    root_value: str | Path,
+    title: str,
+    risk: str,
+    proposer: str,
+    scope: str = "",
+    alternatives: str = "",
+    impact: str = "",
+    counter_evidence: str = "",
+    acceptance_criteria: str = "",
+    expires_at: str | None = None,
+) -> dict[str, Any]:
     root = project_dir(root_value)
     check = verify(root)
     if not check["ok"]:
@@ -211,16 +222,30 @@ def create_proposal(root_value: str | Path, title: str, risk: str, proposer: str
         "proposer": proposer,
         "created_at": now_utc(),
         "baseline_git_head": git_head(root),
+        "scope": scope,
+        "alternatives": alternatives,
+        "impact": impact,
+        "counter_evidence": counter_evidence,
+        "acceptance_criteria": acceptance_criteria,
+        "expires_at": expires_at,
         "evidence_refs": [],
         "rollback_reference": None,
         "decision": None,
     }
     write_json(governance_dir(root) / "proposals" / f"{proposal_id}.json", proposal)
-    append_event(root, "proposal.created", {"proposal_id": proposal_id, "risk": risk, "proposer": proposer})
+    append_event(root, "proposal.created", {"proposal_id": proposal_id, "risk": risk, "proposer": proposer, "scope": scope})
     return proposal
 
 
-def decide(root_value: str | Path, proposal_id: str, action: str, approver: str, evidence: str | None, rollback: str | None) -> dict[str, Any]:
+def decide(
+    root_value: str | Path,
+    proposal_id: str,
+    action: str,
+    approver: str,
+    evidence: str | None,
+    rollback: str | None,
+    reason: str | None = None,
+) -> dict[str, Any]:
     root = project_dir(root_value)
     charter = read_json(governance_dir(root) / "charter.json")
     if approver not in charter.get("owners", []):
@@ -232,8 +257,13 @@ def decide(root_value: str | Path, proposal_id: str, action: str, approver: str,
         raise AEGSError("action must be APPROVE, REJECT, DEFER, or HOLD")
     if proposal["status"] != "DRAFT":
         raise AEGSError("Only DRAFT proposals may receive an initial decision")
-    if action == "APPROVE" and proposal["risk"] in {"YELLOW", "RED"} and (not evidence or not rollback):
-        raise AEGSError("YELLOW/RED approval requires both evidence and rollback references")
+    if action == "APPROVE" and proposal["risk"] in {"YELLOW", "RED"}:
+        required_fields = ("scope", "alternatives", "impact", "counter_evidence", "acceptance_criteria")
+        missing_fields = [field for field in required_fields if not proposal.get(field)]
+        if missing_fields:
+            raise AEGSError("YELLOW/RED approval requires structured proposal fields: " + ", ".join(missing_fields))
+        if not evidence or not rollback or not reason:
+            raise AEGSError("YELLOW/RED approval requires evidence, rollback, and decision reason")
     directive_id = f"HD-{uuid.uuid4().hex[:12]}"
     directive = {
         "directive_id": directive_id,
@@ -244,6 +274,7 @@ def decide(root_value: str | Path, proposal_id: str, action: str, approver: str,
         "approver": approver,
         "evidence": evidence,
         "rollback_reference": rollback,
+        "reason": reason,
         "created_at": now_utc(),
     }
     write_json(governance_dir(root) / "directives" / f"{directive_id}.json", directive)
@@ -252,7 +283,7 @@ def decide(root_value: str | Path, proposal_id: str, action: str, approver: str,
     proposal["rollback_reference"] = rollback
     proposal["decision"] = directive_id
     write_json(proposal_path, proposal)
-    append_event(root, "human.decision.recorded", {"proposal_id": proposal_id, "directive_id": directive_id, "action": action, "approver": approver})
+    append_event(root, "human.decision.recorded", {"proposal_id": proposal_id, "directive_id": directive_id, "action": action, "approver": approver, "reason": reason})
     return directive
 
 

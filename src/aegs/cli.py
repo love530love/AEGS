@@ -31,6 +31,12 @@ def parser() -> argparse.ArgumentParser:
     create.add_argument("--title", required=True)
     create.add_argument("--risk", required=True, choices=["GREEN", "YELLOW", "RED"])
     create.add_argument("--proposer", required=True)
+    create.add_argument("--scope", default="")
+    create.add_argument("--alternatives", default="")
+    create.add_argument("--impact", default="")
+    create.add_argument("--counter-evidence", default="")
+    create.add_argument("--acceptance-criteria", default="")
+    create.add_argument("--expires-at")
     decision = commands.add_parser("decide", help="record an owner decision")
     decision.add_argument("path", nargs="?", default=".")
     decision.add_argument("--proposal", required=True)
@@ -38,6 +44,7 @@ def parser() -> argparse.ArgumentParser:
     decision.add_argument("--approver", required=True)
     decision.add_argument("--evidence")
     decision.add_argument("--rollback")
+    decision.add_argument("--reason")
     server = commands.add_parser("serve", help="run the local Human Governance Console")
     server.add_argument("path", nargs="?", default=".")
     server.add_argument("--port", type=int, default=8080)
@@ -67,9 +74,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "takeover":
             result = takeover(args.path)
         elif args.command == "proposal" and args.proposal_command == "create":
-            result = create_proposal(args.path, args.title, args.risk, args.proposer)
+            result = create_proposal(args.path, args.title, args.risk, args.proposer, args.scope, args.alternatives, args.impact, args.counter_evidence, args.acceptance_criteria, args.expires_at)
         else:
-            result = decide(args.path, args.proposal, args.action, args.approver, args.evidence, args.rollback)
+            result = decide(args.path, args.proposal, args.action, args.approver, args.evidence, args.rollback, args.reason)
     except AEGSError as error:
         print(f"AEGS error: {error}", file=sys.stderr)
         return 2
