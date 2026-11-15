@@ -1,15 +1,15 @@
 # AEGS Agent Handoff
 
-- Handoff ID: `HO-fdb8b8ba1ed4`
+- Handoff ID: `HO-2615bd532acb`
 - Project: `AEGS`
 - Charter version: `0.1.0`
-- Architecture snapshot: `AS-ea841e4695e9`
+- Architecture snapshot: `AS-7dae6ff69c7c`
 
 ## Current goal
 Review the architecture snapshot, resolve critical unknowns, and create evidence-backed improvement proposals.
 
 ## Verified facts
-- Read-only architecture snapshot AS-ea841e4695e9 created for Git 6cadbfc6f3ccc7cc5e32a95ac635075b4fadf93a.
+- Read-only architecture snapshot AS-7dae6ff69c7c created for Git f3495025e893987f523ce147116a7aa6dad42679.
 
 ## Unresolved questions
 - Which inferred relationships are business-critical?

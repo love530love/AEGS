@@ -1,0 +1,20 @@
+{
+  "proposal_id": "PR-ca7f195c1ab7",
+  "status": "APPROVED",
+  "title": "P0 harden handoff freshness and fail-closed governance",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-15T11:19:53Z",
+  "baseline_git_head": "90dffb6088aa8ecc06ca25daa724bd5d1e348a9a",
+  "scope": "Handoff integrity, non-Git freshness, proposal expiry, and governance write guards",
+  "alternatives": "Retain prototype semantics and treat documented weaknesses as operator guidance",
+  "impact": "Older handoffs and high-risk drafts without expiry become STALE or cannot be approved until regenerated",
+  "counter_evidence": "Additional guards can impede recovery workflows if legitimate ledger repair is needed",
+  "acceptance_criteria": "Tampered handoff, changed non-Git file, expired proposal, and corrupted ledger all block takeover or governance writes",
+  "expires_at": "2026-12-15T23:59:59Z",
+  "evidence_refs": [
+    "AEP independent review reproduced handoff, non-Git, expiry, and fail-open gaps; USR-20261115 authorizes remediation"
+  ],
+  "rollback_reference": "Revert the hardening commit, retain JSONL evidence, and regenerate a legacy handoff only for controlled recovery.",
+  "decision": "HD-e52003e00ca8"
+}
