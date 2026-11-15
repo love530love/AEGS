@@ -34,6 +34,7 @@ AEGS 是一个用于研究和实现 **Governed Self-Evolution（受治理的自�
 - [自指导与受控能力雷达](docs/13-self-guidance-and-capability-radar.md)
 - [项目治理包模板](docs/templates/PROJECT_CHARTER_TEMPLATE.md)
 - [Agent 交接模板](docs/templates/AGENT_HANDOFF_TEMPLATE.md)
+- [演进审议记录](docs/14-evolution-council-review-2026-11-15.md)
 
 ## 状态
 
@@ -48,6 +49,7 @@ python -m pip install -e .
 aegs init <project-path> --owner <owner-id>
 aegs verify <project-path>
 aegs discover <project-path>
+aegs takeover <project-path>
 aegs proposal create <project-path> --title "Sandbox test" --risk GREEN --proposer agent-name
 aegs handoff <project-path>
 aegs serve <project-path> --port 8080
@@ -58,3 +60,9 @@ aegs serve <project-path> --port 8080
 `aegs serve` 启动本机 Human Governance Console，用于查看验证状态、待决提案和结构化反馈。它没有身份认证，**只能绑定在本机进行原型演示，禁止暴露到局域网或互联网**。
 
 `aegs discover` 是只读架构发现器。它输出绑定当前 Git commit 的架构快照，分类源代码、依赖清单、测试、CI、文档和契约文件，并将导入关系标记为“推断”而不是事实。它默认跳过 `.env`、密钥文件、`.aegs`、Git 元数据、虚拟环境和依赖目录；发现结果仍需由项目负责人确认外部依赖、运行时行为和不可变更约束。
+
+`aegs takeover` 是 Agent 的接管门控。它只在交接包、代码指纹、账本头和架构快照绑定一致时返回 `PASS`；否则返回 `STALE`，要求重新发现/交接且只允许只读定位。它不能抵御拥有本地文件写权限的攻击者整体重写账本，不能替代认证或外部不可变锚定。
+
+## 当前安全定位
+
+目前实现是单机原型，不可用于真实审批、敏感项目或生产权限控制。详情、未解决风险和下一里程碑见 [演进审议记录](docs/14-evolution-council-review-2026-11-15.md)。

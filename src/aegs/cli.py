@@ -5,7 +5,7 @@ import json
 import sys
 
 from .console import serve
-from .core import AEGSError, create_handoff, create_proposal, decide, initialise, verify
+from .core import AEGSError, create_handoff, create_proposal, decide, initialise, takeover, verify
 from .discovery import discover
 
 
@@ -22,6 +22,8 @@ def parser() -> argparse.ArgumentParser:
     discovery = commands.add_parser("discover", help="create a read-only architecture snapshot")
     discovery.add_argument("path", nargs="?", default=".")
     discovery.add_argument("--max-files", type=int, default=5000)
+    takeover_command = commands.add_parser("takeover", help="gate Agent work on fresh verified project context")
+    takeover_command.add_argument("path", nargs="?", default=".")
     proposal = commands.add_parser("proposal", help="manage evolution proposals")
     proposal_commands = proposal.add_subparsers(dest="proposal_command", required=True)
     create = proposal_commands.add_parser("create")
@@ -62,6 +64,8 @@ def main(argv: list[str] | None = None) -> int:
             result = create_handoff(args.path)
         elif args.command == "discover":
             result = discover(args.path, args.max_files)
+        elif args.command == "takeover":
+            result = takeover(args.path)
         elif args.command == "proposal" and args.proposal_command == "create":
             result = create_proposal(args.path, args.title, args.risk, args.proposer)
         else:

@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from aegs.core import AEGSError, create_handoff, create_proposal, decide, initialise, record_feedback, verify, verify_ledger
+from aegs.core import AEGSError, create_handoff, create_proposal, decide, initialise, record_feedback, takeover, verify, verify_ledger
 from aegs.discovery import discover
 
 
@@ -56,6 +56,13 @@ class GovernanceCoreTests(unittest.TestCase):
         self.assertEqual(handoff["architecture_snapshot"], snapshot["snapshot_id"])
         self.assertIn(snapshot["snapshot_id"], handoff["verified_facts"][0])
         self.assertTrue((self.root / ".aegs" / "HANDOFF.md").exists())
+
+    def test_takeover_requires_fresh_handoff_and_detects_later_events(self):
+        discover(self.root)
+        create_handoff(self.root)
+        self.assertEqual(takeover(self.root)["status"], "PASS")
+        create_proposal(self.root, "Later candidate", "GREEN", "agent")
+        self.assertEqual(takeover(self.root)["status"], "STALE")
 
 
 if __name__ == "__main__":

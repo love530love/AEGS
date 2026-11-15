@@ -21,6 +21,10 @@ def canonical_json(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
+def document_hash(value: Any) -> str:
+    return hashlib.sha256(canonical_json(value).encode("utf-8")).hexdigest()
+
+
 def read_json(path: Path) -> dict[str, Any]:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -50,6 +54,30 @@ def git_head(root: Path) -> str | None:
     return result.stdout.strip() if result.returncode == 0 else None
 
 
+def code_fingerprint(root: Path) -> dict[str, Any]:
+    """Hash Git-indexed project content while excluding AEGS's own runtime records."""
+    tracked = subprocess.run(["git", "ls-files", "-s"], cwd=root, text=True, capture_output=True, check=False)
+    status = subprocess.run(["git", "status", "--porcelain"], cwd=root, text=True, capture_output=True, check=False)
+    if tracked.returncode != 0 or status.returncode != 0:
+        return {"git_available": False, "head": None, "tracked_content_hash": None, "dirty_non_governance": None}
+    tracked_lines = [line for line in tracked.stdout.splitlines() if "\t.aegs/" not in line]
+    dirty_lines = [line for line in status.stdout.splitlines() if ".aegs/" not in line.replace("\\", "/")]
+    return {
+        "git_available": True,
+        "head": git_head(root),
+        "tracked_content_hash": hashlib.sha256("\n".join(tracked_lines).encode("utf-8")).hexdigest(),
+        "dirty_non_governance": bool(dirty_lines),
+    }
+
+
+def ledger_head(root: Path) -> str | None:
+    ledger = governance_dir(root) / "ledger.jsonl"
+    if not ledger.exists():
+        return None
+    lines = [line for line in ledger.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return json.loads(lines[-1]).get("event_hash") if lines else None
+
+
 def append_event(root: Path, event_type: str, payload: dict[str, Any]) -> dict[str, Any]:
     ledger = governance_dir(root) / "ledger.jsonl"
     previous_hash = "GENESIS"
@@ -64,7 +92,7 @@ def append_event(root: Path, event_type: str, payload: dict[str, Any]) -> dict[s
         "previous_hash": previous_hash,
         "payload": payload,
     }
-    event["event_hash"] = hashlib.sha256(canonical_json(event).encode("utf-8")).hexdigest()
+    event["event_hash"] = document_hash(event)
     with ledger.open("a", encoding="utf-8", newline="\n") as handle:
         handle.write(canonical_json(event) + "\n")
     return event
@@ -84,7 +112,7 @@ def verify_ledger(root: Path) -> tuple[bool, str, int]:
             recorded_hash = event.pop("event_hash")
         except (json.JSONDecodeError, KeyError):
             return False, f"malformed event at line {number}", count
-        calculated_hash = hashlib.sha256(canonical_json(event).encode("utf-8")).hexdigest()
+        calculated_hash = document_hash(event)
         if event.get("previous_hash") != expected_previous:
             return False, f"broken previous_hash at line {number}", count
         if recorded_hash != calculated_hash:
@@ -227,6 +255,10 @@ def create_handoff(root_value: str | Path) -> dict[str, Any]:
         raise AEGSError("Cannot create handoff while verification fails: " + "; ".join(check["errors"]))
     state = read_json(governance_dir(root) / "state.json")
     handoff_id = f"HO-{uuid.uuid4().hex[:12]}"
+    snapshot_id = state.get("architecture_snapshot")
+    snapshot = None
+    if snapshot_id:
+        snapshot = read_json(governance_dir(root) / "architecture" / f"{snapshot_id}.json")
     handoff = {
         "handoff_id": handoff_id,
         "created_at": now_utc(),
@@ -236,10 +268,17 @@ def create_handoff(root_value: str | Path) -> dict[str, Any]:
         "unverified_claims": state.get("unverified_claims", []),
         "current_goal": state.get("current_goal"),
         "open_risks": state.get("open_risks", []),
-        "architecture_snapshot": state.get("architecture_snapshot"),
+        "architecture_snapshot": snapshot_id,
         "unresolved_questions": state.get("unresolved_questions", []),
         "safe_next_actions": state.get("safe_next_actions", []),
         "verification": check,
+    }
+    append_event(root, "handoff.created", {"handoff_id": handoff_id, "architecture_snapshot": snapshot_id})
+    handoff["evidence_binding"] = {
+        "code_fingerprint": code_fingerprint(root),
+        "ledger_head": ledger_head(root),
+        "architecture_snapshot_hash": document_hash(snapshot) if snapshot else None,
+        "generated_at": now_utc(),
     }
     write_json(governance_dir(root) / "handoffs" / f"{handoff_id}.json", handoff)
     write_json(governance_dir(root) / "current_handoff.json", handoff)
@@ -270,8 +309,54 @@ def create_handoff(root_value: str | Path) -> dict[str, Any]:
         "",
     ])
     (governance_dir(root) / "HANDOFF.md").write_text(markdown, encoding="utf-8", newline="\n")
-    append_event(root, "handoff.created", {"handoff_id": handoff_id})
     return handoff
+
+
+def takeover(root_value: str | Path) -> dict[str, Any]:
+    """Determine whether an Agent may safely proceed beyond read-only orientation."""
+    root = project_dir(root_value)
+    check = verify(root)
+    if not check["ok"]:
+        return {"status": "HOLD", "may_act": False, "reasons": check["errors"], "safe_next_actions": ["Repair or investigate governance verification before taking action."]}
+    handoff_path = governance_dir(root) / "current_handoff.json"
+    try:
+        handoff = read_json(handoff_path)
+    except AEGSError:
+        return {"status": "STALE", "may_act": False, "reasons": ["No current handoff exists."], "safe_next_actions": ["Run 'aegs handoff <project>' after discovery and verification."]}
+    binding = handoff.get("evidence_binding")
+    if not binding:
+        return {"status": "STALE", "may_act": False, "reasons": ["Handoff has no evidence binding; regenerate it."], "safe_next_actions": ["Run 'aegs handoff <project>'."]}
+    reasons: list[str] = []
+    if binding.get("ledger_head") != ledger_head(root):
+        reasons.append("Event ledger changed after the handoff was generated.")
+    if binding.get("code_fingerprint") != code_fingerprint(root):
+        reasons.append("Project code fingerprint changed after the handoff was generated.")
+    snapshot_id = handoff.get("architecture_snapshot")
+    if snapshot_id:
+        try:
+            snapshot = read_json(governance_dir(root) / "architecture" / f"{snapshot_id}.json")
+            if binding.get("architecture_snapshot_hash") != document_hash(snapshot):
+                reasons.append("Architecture snapshot content changed after the handoff was generated.")
+        except AEGSError:
+            reasons.append("Referenced architecture snapshot is missing.")
+    elif binding.get("architecture_snapshot_hash") is not None:
+        reasons.append("Handoff snapshot binding is inconsistent.")
+    if code_fingerprint(root).get("dirty_non_governance"):
+        reasons.append("Project has uncommitted non-governance changes.")
+    if reasons:
+        return {
+            "status": "STALE",
+            "may_act": False,
+            "reasons": reasons,
+            "safe_next_actions": ["Run 'aegs discover <project>' if architecture-relevant content changed.", "Run 'aegs handoff <project>' after verification; obtain human direction before non-read-only work."],
+        }
+    return {
+        "status": "PASS",
+        "may_act": True,
+        "reasons": [],
+        "safe_next_actions": ["Proceed only within Charter permissions and create a governed proposal before changing project behavior."],
+        "handoff_id": handoff.get("handoff_id"),
+    }
 
 
 def list_proposals(root_value: str | Path) -> list[dict[str, Any]]:

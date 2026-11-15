@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import re
+import hashlib
 import subprocess
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .core import AEGSError, append_event, git_head, governance_dir, project_dir, read_json, write_json
+from .core import AEGSError, append_event, canonical_json, git_head, governance_dir, project_dir, read_json, write_json
 
 
 EXCLUDED_DIRECTORIES = {".git", ".aegs", ".venv", "venv", "node_modules", "__pycache__", ".pytest_cache"}
@@ -134,6 +135,7 @@ def discover(root_value: str | Path, max_files: int = 5000) -> dict[str, Any]:
             "Which components may not be changed without explicit owner approval?",
         ],
     }
+    snapshot["content_hash"] = hashlib.sha256(canonical_json(snapshot).encode("utf-8")).hexdigest()
     aegs = governance_dir(root)
     write_json(aegs / "architecture" / f"{snapshot_id}.json", snapshot)
     write_json(aegs / "current_architecture.json", snapshot)
