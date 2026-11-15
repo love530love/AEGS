@@ -1,9 +1,9 @@
 {
-  "snapshot_id": "AS-2d8f9a0f266d",
+  "snapshot_id": "AS-4ee4705e89fc",
   "schema_version": "0.1",
-  "created_at": "2026-11-15T12:36:14Z",
+  "created_at": "2026-11-15T13:04:34Z",
   "root": "F:\\PythonProjects1\\AEGS",
-  "git_head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
+  "git_head": "e1f88d06083d010cb28bdf6848e5d74faa2ac971",
   "working_tree_dirty": false,
   "discovery_mode": "read_only",
   "files": [
@@ -208,13 +208,23 @@
       "category": "documentation"
     },
     {
+      "path": "docs/23-local-ledger-anchors.md",
+      "size_bytes": 799,
+      "category": "documentation"
+    },
+    {
       "path": "tests/test_core.py",
-      "size_bytes": 15717,
+      "size_bytes": 17538,
       "category": "test"
     },
     {
+      "path": "src/aegs/anchor.py",
+      "size_bytes": 7470,
+      "category": "source"
+    },
+    {
       "path": "src/aegs/cli.py",
-      "size_bytes": 7124,
+      "size_bytes": 8174,
       "category": "source"
     },
     {
@@ -224,7 +234,7 @@
     },
     {
       "path": "src/aegs/core.py",
-      "size_bytes": 29916,
+      "size_bytes": 30181,
       "category": "source"
     },
     {
@@ -266,9 +276,9 @@
   "category_counts": {
     "other": 1,
     "dependency_manifest": 1,
-    "documentation": 41,
+    "documentation": 42,
     "test": 1,
-    "source": 7
+    "source": 8
   },
   "relationships": [
     {
@@ -350,10 +360,73 @@
     },
     {
       "source": "tests/test_core.py",
-      "target": "aegs.journal",
+      "target": "aegs.anchor",
       "relation": "imports",
       "confidence": "inferred",
       "evidence": "tests/test_core.py:13"
+    },
+    {
+      "source": "tests/test_core.py",
+      "target": "aegs.journal",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_core.py:14"
+    },
+    {
+      "source": "src/aegs/anchor.py",
+      "target": "__future__",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/anchor.py:7"
+    },
+    {
+      "source": "src/aegs/anchor.py",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/anchor.py:9"
+    },
+    {
+      "source": "src/aegs/anchor.py",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/anchor.py:10"
+    },
+    {
+      "source": "src/aegs/anchor.py",
+      "target": "uuid",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/anchor.py:11"
+    },
+    {
+      "source": "src/aegs/anchor.py",
+      "target": "datetime",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/anchor.py:12"
+    },
+    {
+      "source": "src/aegs/anchor.py",
+      "target": "pathlib",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/anchor.py:13"
+    },
+    {
+      "source": "src/aegs/anchor.py",
+      "target": "typing",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/anchor.py:14"
+    },
+    {
+      "source": "src/aegs/anchor.py",
+      "target": ".core",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/anchor.py:16"
     },
     {
       "source": "src/aegs/cli.py",
@@ -417,6 +490,13 @@
       "relation": "imports",
       "confidence": "inferred",
       "evidence": "src/aegs/cli.py:11"
+    },
+    {
+      "source": "src/aegs/cli.py",
+      "target": ".anchor",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/cli.py:12"
     },
     {
       "source": "src/aegs/console.py",
@@ -550,6 +630,13 @@
       "relation": "imports",
       "confidence": "inferred",
       "evidence": "src/aegs/core.py:20"
+    },
+    {
+      "source": "src/aegs/core.py",
+      "target": ".anchor",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "src/aegs/core.py:591"
     },
     {
       "source": "src/aegs/discovery.py",
@@ -711,5 +798,5 @@
     "Which external systems, production constraints, and undocumented dependencies are missing?",
     "Which components may not be changed without explicit owner approval?"
   ],
-  "content_hash": "c5c98bdced4c69fd06dbb09e1c5e8a10667436e4afdbc9ded7f6b1f7599b8825"
+  "content_hash": "7e3e8954e6d97acde0ad859a2f4faed01e7cf481423d72be4fc115bdfd442be5"
 }

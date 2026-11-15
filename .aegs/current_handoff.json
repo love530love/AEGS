@@ -1,10 +1,10 @@
 {
-  "handoff_id": "HO-8642287d2180",
-  "created_at": "2026-11-15T12:36:15Z",
+  "handoff_id": "HO-954206705fdf",
+  "created_at": "2026-11-15T13:04:35Z",
   "project_id": "AEGS",
   "charter_version": "0.1.0",
   "verified_facts": [
-    "Read-only architecture snapshot AS-2d8f9a0f266d created for Git b85b9acee6f8843214a42facc76dd2ffd1c22484."
+    "Read-only architecture snapshot AS-4ee4705e89fc created for Git e1f88d06083d010cb28bdf6848e5d74faa2ac971."
   ],
   "unverified_claims": [],
   "current_goal": "Review the architecture snapshot, resolve critical unknowns, and create evidence-backed improvement proposals.",
@@ -12,7 +12,7 @@
     "Static discovery is not runtime proof; external services and undocumented dependencies require human confirmation.",
     "Sensitive files are intentionally excluded from discovery content."
   ],
-  "architecture_snapshot": "AS-2d8f9a0f266d",
+  "architecture_snapshot": "AS-4ee4705e89fc",
   "unresolved_questions": [
     "Which inferred relationships are business-critical?",
     "Which external systems, production constraints, and undocumented dependencies are missing?",
@@ -25,17 +25,17 @@
   "verification": {
     "ok": true,
     "root": "F:\\PythonProjects1\\AEGS",
-    "git_head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
-    "ledger_events": 45,
+    "git_head": "e1f88d06083d010cb28bdf6848e5d74faa2ac971",
+    "ledger_events": 49,
     "ledger_status": "ok",
     "errors": []
   },
   "state_binding": {
-    "current_git_head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
+    "current_git_head": "e1f88d06083d010cb28bdf6848e5d74faa2ac971",
     "current_code_fingerprint": {
       "git_available": true,
-      "head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
-      "tracked_content_hash": "aed1c18fabceaa48f886948df266f91ad73fd39a07fe054a64909c7193a9d53f",
+      "head": "e1f88d06083d010cb28bdf6848e5d74faa2ac971",
+      "tracked_content_hash": "5c2fdcfccca9d29f698f0a2e7a94dcd017c8acd0dcbe69d53b0c2cb326a9233e",
       "dirty_non_governance": false,
       "source": "git_index"
     }
@@ -43,15 +43,15 @@
   "evidence_binding": {
     "code_fingerprint": {
       "git_available": true,
-      "head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
-      "tracked_content_hash": "aed1c18fabceaa48f886948df266f91ad73fd39a07fe054a64909c7193a9d53f",
+      "head": "e1f88d06083d010cb28bdf6848e5d74faa2ac971",
+      "tracked_content_hash": "5c2fdcfccca9d29f698f0a2e7a94dcd017c8acd0dcbe69d53b0c2cb326a9233e",
       "dirty_non_governance": false,
       "source": "git_index"
     },
-    "ledger_head_before_handoff": "f796a25cd83315c8a3ef202b996d8996cd020811882c325a928077d51d14495b",
-    "architecture_snapshot_hash": "5e4e9af6a6e0cbc413e1c8f256b723630c14446627241f06949c885df004ed89",
-    "generated_at": "2026-11-15T12:36:15Z",
-    "handoff_event_hash": "9eecd708b5f08d60abf0f2c7af80479b7bc2327f7c93eff4567f8633c2faf353"
+    "ledger_head_before_handoff": "7c32d67a7001e634a166d34204296a210468208bf4d5e3ca5e66a7fcba537969",
+    "architecture_snapshot_hash": "8ce3be0a8892743d7da9e6c1511281b938851d6a45eada8b33aeff7112cc90f0",
+    "generated_at": "2026-11-15T13:04:35Z",
+    "handoff_event_hash": "19424f5e0758cb30d128fd81b204313a493e212ae34166cc8f973a8d9c5aedcb"
   },
-  "handoff_hash": "31b09c78ae7fc7a44c08c956ae2b0635958a286f67aeb607f63f600aae8a55c8"
+  "handoff_hash": "421da240219c0e9da12657885ebf013a0d3d2fecefb566deb13da641388a0244"
 }

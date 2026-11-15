@@ -4,7 +4,7 @@
   "charter_version": "0.1.0",
   "current_goal": "Review the architecture snapshot, resolve critical unknowns, and create evidence-backed improvement proposals.",
   "verified_facts": [
-    "Read-only architecture snapshot AS-2d8f9a0f266d created for Git b85b9acee6f8843214a42facc76dd2ffd1c22484."
+    "Read-only architecture snapshot AS-4ee4705e89fc created for Git e1f88d06083d010cb28bdf6848e5d74faa2ac971."
   ],
   "unverified_claims": [],
   "open_risks": [
@@ -15,9 +15,9 @@
     "Review the current architecture snapshot and confirm or correct unresolved questions.",
     "Create a governed proposal before changing project behavior."
   ],
-  "current_git_head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
-  "architecture_snapshot": "AS-2d8f9a0f266d",
-  "architecture_snapshot_git_head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
+  "current_git_head": "e1f88d06083d010cb28bdf6848e5d74faa2ac971",
+  "architecture_snapshot": "AS-4ee4705e89fc",
+  "architecture_snapshot_git_head": "e1f88d06083d010cb28bdf6848e5d74faa2ac971",
   "unresolved_questions": [
     "Which inferred relationships are business-critical?",
     "Which external systems, production constraints, and undocumented dependencies are missing?",
@@ -25,9 +25,10 @@
   ],
   "current_code_fingerprint": {
     "git_available": true,
-    "head": "b85b9acee6f8843214a42facc76dd2ffd1c22484",
-    "tracked_content_hash": "aed1c18fabceaa48f886948df266f91ad73fd39a07fe054a64909c7193a9d53f",
+    "head": "e1f88d06083d010cb28bdf6848e5d74faa2ac971",
+    "tracked_content_hash": "5c2fdcfccca9d29f698f0a2e7a94dcd017c8acd0dcbe69d53b0c2cb326a9233e",
     "dirty_non_governance": false,
     "source": "git_index"
-  }
+  },
+  "external_ledger_anchor_path": "F:/PythonProjects1/AEGS-ledger-anchor.json"
 }
