@@ -37,6 +37,7 @@ AEGS 是一个用于研究和实现 **Governed Self-Evolution（受治理的自�
 - [演进审议记录](docs/14-evolution-council-review-2026-11-15.md)
 - [开发路线图](docs/15-implementation-roadmap.md)
 - [Doctor 与架构快照 Diff](docs/16-doctor-and-architecture-diff.md)
+- [全链路进化与开放生态](docs/17-governed-evolution-loop-and-ecosystem.md)
 
 ## 状态
 

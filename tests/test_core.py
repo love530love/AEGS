@@ -4,6 +4,7 @@ from pathlib import Path
 
 from aegs.core import AEGSError, code_fingerprint, create_handoff, create_proposal, decide, doctor, initialise, record_feedback, same_code_fingerprint, takeover, verify, verify_ledger
 from aegs.discovery import diff_snapshots, discover
+from aegs.journal import init_journal, journal_status, sync_journal
 
 
 class GovernanceCoreTests(unittest.TestCase):
@@ -89,6 +90,15 @@ class GovernanceCoreTests(unittest.TestCase):
         second = discover(self.root)
         difference = diff_snapshots(self.root, first["snapshot_id"], second["snapshot_id"])
         self.assertEqual(difference["files"]["changed_metadata"], ["app.py"])
+
+    def test_sqlite_journal_mirrors_and_syncs_ledger(self):
+        initialized = init_journal(self.root)
+        self.assertEqual(initialized["status"], "PASS")
+        self.assertEqual(journal_status(self.root)["status"], "PASS")
+        create_proposal(self.root, "Journal sync", "GREEN", "agent")
+        self.assertEqual(journal_status(self.root)["status"], "STALE")
+        self.assertEqual(sync_journal(self.root)["status"], "PASS")
+        self.assertEqual(journal_status(self.root)["status"], "PASS")
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ import sys
 from .console import serve
 from .core import AEGSError, create_handoff, create_proposal, decide, doctor, initialise, takeover, verify
 from .discovery import diff_snapshots, discover, list_snapshots
+from .journal import init_journal, journal_status, sync_journal
 
 
 def parser() -> argparse.ArgumentParser:
@@ -34,6 +35,11 @@ def parser() -> argparse.ArgumentParser:
     diff.add_argument("path", nargs="?", default=".")
     diff.add_argument("--from", dest="older_id", required=True)
     diff.add_argument("--to", dest="newer_id", required=True)
+    journal = commands.add_parser("journal", help="manage the optional SQLite event journal mirror")
+    journal_commands = journal.add_subparsers(dest="journal_command", required=True)
+    for name, help_text in (("init", "initialize a journal mirror from JSONL"), ("status", "verify journal and JSONL consistency"), ("sync", "transactionally import new JSONL events")):
+        command = journal_commands.add_parser(name, help=help_text)
+        command.add_argument("path", nargs="?", default=".")
     proposal = commands.add_parser("proposal", help="manage evolution proposals")
     proposal_commands = proposal.add_subparsers(dest="proposal_command", required=True)
     create = proposal_commands.add_parser("create")
@@ -89,6 +95,12 @@ def main(argv: list[str] | None = None) -> int:
             result = {"snapshots": list_snapshots(args.path)}
         elif args.command == "architecture" and args.architecture_command == "diff":
             result = diff_snapshots(args.path, args.older_id, args.newer_id)
+        elif args.command == "journal" and args.journal_command == "init":
+            result = init_journal(args.path)
+        elif args.command == "journal" and args.journal_command == "status":
+            result = journal_status(args.path)
+        elif args.command == "journal" and args.journal_command == "sync":
+            result = sync_journal(args.path)
         elif args.command == "proposal" and args.proposal_command == "create":
             result = create_proposal(args.path, args.title, args.risk, args.proposer, args.scope, args.alternatives, args.impact, args.counter_evidence, args.acceptance_criteria, args.expires_at)
         else:
