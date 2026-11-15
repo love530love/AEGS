@@ -1,0 +1,20 @@
+{
+  "proposal_id": "PR-b244ce565c80",
+  "status": "APPROVED",
+  "title": "AEP NL state and handoff freshness alignment",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-15T12:03:00Z",
+  "baseline_git_head": "f72abb2c1689ae03f4be0833417a1971cfe7ce95",
+  "scope": "Synchronize state Git/fingerprint bindings when creating handoff and diagnose drift",
+  "alternatives": "Only document state as advisory while takeover ignores it",
+  "impact": "Older handoffs become stale until regenerated; state changes become part of handoff evidence",
+  "counter_evidence": "State is still a local file and synchronization is not a replacement for signed transactional storage",
+  "acceptance_criteria": "Takeover and doctor flag handoff-new/state-old; newly created handoff has aligned state binding",
+  "expires_at": "2026-12-15T23:59:59Z",
+  "evidence_refs": [
+    "AEP-NL-20261115-2005-01"
+  ],
+  "rollback_reference": "Revert the state-handoff alignment commit and regenerate governance artifacts.",
+  "decision": "HD-23e1d688ecee"
+}
