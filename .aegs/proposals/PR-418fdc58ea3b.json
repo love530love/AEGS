@@ -1,0 +1,20 @@
+{
+  "proposal_id": "PR-418fdc58ea3b",
+  "status": "APPROVED",
+  "title": "M2 doctor and architecture snapshot diff",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-15T10:54:39Z",
+  "baseline_git_head": "47b0c0f09dd215f516b0e7d0646750363a9ba88a",
+  "scope": "AEGS local diagnostics and read-only architecture comparison",
+  "alternatives": "Keep manual verification and compare JSON snapshots by hand",
+  "impact": "Adds read-only CLI diagnostics; does not change production permissions",
+  "counter_evidence": "Diagnostics may give a false sense of security if treated as authentication or immutable audit",
+  "acceptance_criteria": "Doctor flags stale handoff and snapshot diff reports added, removed, and changed files",
+  "expires_at": null,
+  "evidence_refs": [
+    "USR-20261115: user requested continued M2 development"
+  ],
+  "rollback_reference": "Revert the M2 implementation commit and regenerate architecture and handoff artifacts.",
+  "decision": "HD-4884f2c08267"
+}

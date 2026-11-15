@@ -1,0 +1,12 @@
+{
+  "directive_id": "HD-4884f2c08267",
+  "kind": "decision",
+  "scope": "project",
+  "proposal_id": "PR-418fdc58ea3b",
+  "action": "APPROVE",
+  "approver": "love530love",
+  "evidence": "USR-20261115: user requested continued M2 development",
+  "rollback_reference": "Revert the M2 implementation commit and regenerate architecture and handoff artifacts.",
+  "reason": "Read-only diagnostics improve safe project adoption before higher-risk storage migration.",
+  "created_at": "2026-11-15T10:54:45Z"
+}
