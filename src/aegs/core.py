@@ -70,6 +70,14 @@ def code_fingerprint(root: Path) -> dict[str, Any]:
     }
 
 
+def same_code_fingerprint(left: dict[str, Any] | None, right: dict[str, Any] | None) -> bool:
+    """Compare project content, not Git commits that changed only `.aegs` evidence artifacts."""
+    if not left or not right:
+        return False
+    keys = ("git_available", "tracked_content_hash", "dirty_non_governance")
+    return all(left.get(key) == right.get(key) for key in keys)
+
+
 def ledger_head(root: Path) -> str | None:
     ledger = governance_dir(root) / "ledger.jsonl"
     if not ledger.exists():
@@ -329,7 +337,7 @@ def takeover(root_value: str | Path) -> dict[str, Any]:
     reasons: list[str] = []
     if binding.get("ledger_head") != ledger_head(root):
         reasons.append("Event ledger changed after the handoff was generated.")
-    if binding.get("code_fingerprint") != code_fingerprint(root):
+    if not same_code_fingerprint(binding.get("code_fingerprint"), code_fingerprint(root)):
         reasons.append("Project code fingerprint changed after the handoff was generated.")
     snapshot_id = handoff.get("architecture_snapshot")
     if snapshot_id:

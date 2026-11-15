@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from aegs.core import AEGSError, create_handoff, create_proposal, decide, initialise, record_feedback, takeover, verify, verify_ledger
+from aegs.core import AEGSError, code_fingerprint, create_handoff, create_proposal, decide, initialise, record_feedback, same_code_fingerprint, takeover, verify, verify_ledger
 from aegs.discovery import discover
 
 
@@ -63,6 +63,12 @@ class GovernanceCoreTests(unittest.TestCase):
         self.assertEqual(takeover(self.root)["status"], "PASS")
         create_proposal(self.root, "Later candidate", "GREEN", "agent")
         self.assertEqual(takeover(self.root)["status"], "STALE")
+
+    def test_code_fingerprint_ignores_governance_only_commit_head(self):
+        original = {"git_available": True, "head": "before", "tracked_content_hash": "abc", "dirty_non_governance": False}
+        governance_only_update = {"git_available": True, "head": "after", "tracked_content_hash": "abc", "dirty_non_governance": False}
+        self.assertTrue(same_code_fingerprint(original, governance_only_update))
+        self.assertFalse(same_code_fingerprint(original, {**governance_only_update, "tracked_content_hash": "changed"}))
 
 
 if __name__ == "__main__":
