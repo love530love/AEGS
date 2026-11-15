@@ -7,6 +7,7 @@ import sys
 from .console import serve
 from .core import AEGSError, create_handoff, create_proposal, decide, doctor, initialise, takeover, verify
 from .discovery import diff_snapshots, discover, list_snapshots
+from .evidence import export_evidence
 from .journal import init_journal, journal_status, sync_journal, verify_journal
 
 
@@ -40,6 +41,10 @@ def parser() -> argparse.ArgumentParser:
     for name, help_text in (("init", "initialize a journal mirror from JSONL"), ("status", "verify journal and JSONL consistency"), ("verify", "strictly recompute journal mirror consistency"), ("sync", "explicitly import a verified missing JSONL tail")):
         command = journal_commands.add_parser(name, help=help_text)
         command.add_argument("path", nargs="?", default=".")
+    evidence = commands.add_parser("evidence", help="export read-only advisory AEP source evidence")
+    evidence_commands = evidence.add_subparsers(dest="evidence_command", required=True)
+    evidence_export = evidence_commands.add_parser("export", help="print aep-project-evidence-v1 source facts without writing")
+    evidence_export.add_argument("path", nargs="?", default=".")
     proposal = commands.add_parser("proposal", help="manage evolution proposals")
     proposal_commands = proposal.add_subparsers(dest="proposal_command", required=True)
     create = proposal_commands.add_parser("create")
@@ -103,6 +108,8 @@ def main(argv: list[str] | None = None) -> int:
             result = verify_journal(args.path)
         elif args.command == "journal" and args.journal_command == "sync":
             result = sync_journal(args.path)
+        elif args.command == "evidence" and args.evidence_command == "export":
+            result = export_evidence(args.path)
         elif args.command == "proposal" and args.proposal_command == "create":
             result = create_proposal(args.path, args.title, args.risk, args.proposer, args.scope, args.alternatives, args.impact, args.counter_evidence, args.acceptance_criteria, args.expires_at)
         else:

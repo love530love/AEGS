@@ -4,10 +4,12 @@ import sqlite3
 import tempfile
 import time
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 
 from aegs.core import AEGSError, append_event, code_fingerprint, create_handoff, create_proposal, decide, document_hash, doctor, initialise, ledger_write_lock, record_feedback, same_code_fingerprint, takeover, verify, verify_ledger
 from aegs.discovery import diff_snapshots, discover
+from aegs.evidence import export_evidence
 from aegs.journal import init_journal, journal_path, journal_status, sync_journal, verify_journal
 
 
@@ -37,6 +39,30 @@ class GovernanceCoreTests(unittest.TestCase):
         self.assertTrue((self.root / ".aegs" / "current_handoff.json").exists())
         state = json.loads((self.root / ".aegs" / "state.json").read_text(encoding="utf-8"))
         self.assertEqual(state["current_git_head"], handoff["state_binding"]["current_git_head"])
+
+    def test_evidence_export_is_advisory_timezone_aware_and_has_stable_summary(self):
+        create_handoff(self.root)
+        before = (self.root / ".aegs" / "ledger.jsonl").read_text(encoding="utf-8")
+        first = export_evidence(self.root, datetime(2026, 11, 15, 12, 0, tzinfo=timezone.utc))
+        second = export_evidence(self.root, datetime(2026, 11, 15, 12, 1, tzinfo=timezone.utc))
+        for field in ("source", "repo_root", "handoff_id", "handoff_hash", "takeover_status", "observed_at"):
+            self.assertTrue(first[field])
+        self.assertEqual(first["schema"], "aep-project-evidence-v1")
+        self.assertEqual(first["takeover_status"], "PASS")
+        self.assertEqual(first["observed_at"], "2026-11-15T12:00:00Z")
+        self.assertTrue(first["advisory_only"])
+        self.assertFalse(first["automatic_takeover_allowed"])
+        self.assertEqual(first["evidence_summary"], second["evidence_summary"])
+        self.assertEqual(before, (self.root / ".aegs" / "ledger.jsonl").read_text(encoding="utf-8"))
+
+    def test_evidence_export_never_claims_pass_when_takeover_is_stale(self):
+        create_handoff(self.root)
+        create_proposal(self.root, "Invalidate handoff", "GREEN", "agent")
+        exported = export_evidence(self.root, datetime(2026, 11, 15, 12, 0, tzinfo=timezone.utc))
+        self.assertEqual(exported["takeover_status"], "STALE")
+        self.assertNotEqual(exported["takeover_status"], "PASS")
+        self.assertTrue(exported["advisory_only"])
+        self.assertFalse(exported["automatic_takeover_allowed"])
 
     def test_yellow_approval_requires_evidence_and_rollback(self):
         proposal = create_proposal(

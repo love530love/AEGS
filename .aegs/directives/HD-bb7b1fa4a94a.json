@@ -1,0 +1,12 @@
+{
+  "directive_id": "HD-bb7b1fa4a94a",
+  "kind": "decision",
+  "scope": "project",
+  "proposal_id": "PR-0d23bc36da0a",
+  "action": "APPROVE",
+  "approver": "love530love",
+  "evidence": "AEP-NL-20261115-2005-04; AEP project_evidence.py read-only contract",
+  "rollback_reference": "Revert the AEP evidence export commit; keep internal governance evidence and handoff checks unchanged.",
+  "reason": "An advisory, read-only export creates a verifiable bridge without widening AEGS or AEP takeover authority.",
+  "created_at": "2026-11-15T12:34:22Z"
+}

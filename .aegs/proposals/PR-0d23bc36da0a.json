@@ -1,0 +1,20 @@
+{
+  "proposal_id": "PR-0d23bc36da0a",
+  "status": "APPROVED",
+  "title": "AEP advisory evidence export",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-15T12:34:14Z",
+  "baseline_git_head": "6a6e7ff4be60f08c4a0589341c13572b45ba489c",
+  "scope": "Read-only AEP-compatible source evidence export from the current AEGS handoff and takeover gate",
+  "alternatives": "Require consumers to inspect internal governance files or claim automatic takeover",
+  "impact": "External consumers receive advisory-only, no-auto-takeover evidence",
+  "counter_evidence": "The export cannot prove consumer behavior, freshness after emission, or grant cross-project permission",
+  "acceptance_criteria": "Exports required AEP fields with timezone, stable summary, and actual non-PASS takeover status",
+  "expires_at": "2026-12-15T23:59:59Z",
+  "evidence_refs": [
+    "AEP-NL-20261115-2005-04; AEP project_evidence.py read-only contract"
+  ],
+  "rollback_reference": "Revert the AEP evidence export commit; keep internal governance evidence and handoff checks unchanged.",
+  "decision": "HD-bb7b1fa4a94a"
+}
