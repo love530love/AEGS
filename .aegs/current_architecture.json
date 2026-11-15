@@ -1,9 +1,9 @@
 {
-  "snapshot_id": "AS-c7e7a2cfb282",
+  "snapshot_id": "AS-415e59512fc9",
   "schema_version": "0.1",
-  "created_at": "2026-11-15T14:04:36Z",
+  "created_at": "2026-11-15T15:02:52Z",
   "root": "F:\\PythonProjects1\\AEGS",
-  "git_head": "60e79d85111e780dd067360895a6128a7b26e7c2",
+  "git_head": "c409b7acd692cc4e048bbc565f06501bf42881b1",
   "working_tree_dirty": false,
   "discovery_mode": "read_only",
   "files": [
@@ -84,7 +84,7 @@
     },
     {
       "path": "decisions/ADR-0007-handoff-integrity-and-fail-closed-writes.md",
-      "size_bytes": 761,
+      "size_bytes": 833,
       "category": "documentation"
     },
     {
@@ -184,7 +184,7 @@
     },
     {
       "path": "docs/18-aep-sidecar-boundary-and-remediation.md",
-      "size_bytes": 2061,
+      "size_bytes": 2160,
       "category": "documentation"
     },
     {
@@ -220,6 +220,11 @@
     {
       "path": "tests/test_core.py",
       "size_bytes": 20157,
+      "category": "test"
+    },
+    {
+      "path": "tests/test_documentation_contracts.py",
+      "size_bytes": 4478,
       "category": "test"
     },
     {
@@ -282,7 +287,7 @@
     "other": 1,
     "dependency_manifest": 1,
     "documentation": 43,
-    "test": 1,
+    "test": 2,
     "source": 8
   },
   "relationships": [
@@ -376,6 +381,62 @@
       "relation": "imports",
       "confidence": "inferred",
       "evidence": "tests/test_core.py:14"
+    },
+    {
+      "source": "tests/test_documentation_contracts.py",
+      "target": "__future__",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_documentation_contracts.py:7"
+    },
+    {
+      "source": "tests/test_documentation_contracts.py",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_documentation_contracts.py:9"
+    },
+    {
+      "source": "tests/test_documentation_contracts.py",
+      "target": "tempfile",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_documentation_contracts.py:10"
+    },
+    {
+      "source": "tests/test_documentation_contracts.py",
+      "target": "unittest",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_documentation_contracts.py:11"
+    },
+    {
+      "source": "tests/test_documentation_contracts.py",
+      "target": "pathlib",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_documentation_contracts.py:12"
+    },
+    {
+      "source": "tests/test_documentation_contracts.py",
+      "target": "aegs.core",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_documentation_contracts.py:14"
+    },
+    {
+      "source": "tests/test_documentation_contracts.py",
+      "target": "aegs.discovery",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_documentation_contracts.py:15"
+    },
+    {
+      "source": "tests/test_documentation_contracts.py",
+      "target": "aegs.journal",
+      "relation": "imports",
+      "confidence": "inferred",
+      "evidence": "tests/test_documentation_contracts.py:16"
     },
     {
       "source": "src/aegs/anchor.py",
@@ -803,5 +864,5 @@
     "Which external systems, production constraints, and undocumented dependencies are missing?",
     "Which components may not be changed without explicit owner approval?"
   ],
-  "content_hash": "dfaf6a9ba6e69a184ca1a6f9a1faf8d117012ec42b80fe2eaa6f7ceac09a0675"
+  "content_hash": "47e6731d366cdbf9a6fa9477efe006162056c9c7b2af48eff37a80b524d44313"
 }
