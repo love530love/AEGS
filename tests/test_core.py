@@ -2,8 +2,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from aegs.core import AEGSError, code_fingerprint, create_handoff, create_proposal, decide, initialise, record_feedback, same_code_fingerprint, takeover, verify, verify_ledger
-from aegs.discovery import discover
+from aegs.core import AEGSError, code_fingerprint, create_handoff, create_proposal, decide, doctor, initialise, record_feedback, same_code_fingerprint, takeover, verify, verify_ledger
+from aegs.discovery import diff_snapshots, discover
 
 
 class GovernanceCoreTests(unittest.TestCase):
@@ -78,6 +78,17 @@ class GovernanceCoreTests(unittest.TestCase):
         governance_only_update = {"git_available": True, "head": "after", "tracked_content_hash": "abc", "dirty_non_governance": False}
         self.assertTrue(same_code_fingerprint(original, governance_only_update))
         self.assertFalse(same_code_fingerprint(original, {**governance_only_update, "tracked_content_hash": "changed"}))
+
+    def test_doctor_and_snapshot_diff(self):
+        source = self.root / "app.py"
+        source.write_text("print('one')\n", encoding="utf-8")
+        first = discover(self.root)
+        create_handoff(self.root)
+        self.assertEqual(doctor(self.root)["status"], "PASS")
+        source.write_text("print('two changed')\n", encoding="utf-8")
+        second = discover(self.root)
+        difference = diff_snapshots(self.root, first["snapshot_id"], second["snapshot_id"])
+        self.assertEqual(difference["files"]["changed_metadata"], ["app.py"])
 
 
 if __name__ == "__main__":

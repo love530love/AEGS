@@ -398,6 +398,25 @@ def takeover(root_value: str | Path) -> dict[str, Any]:
     }
 
 
+def doctor(root_value: str | Path) -> dict[str, Any]:
+    """Run non-mutating readiness checks before an Agent is allowed to take over."""
+    root = project_dir(root_value)
+    verification = verify(root)
+    checks = [{"name": "governance_verification", "status": "PASS" if verification["ok"] else "HOLD", "detail": verification["ledger_status"] if verification["ok"] else "; ".join(verification["errors"])}]
+    if verification["ok"]:
+        gate = takeover(root)
+        checks.append({"name": "takeover_gate", "status": gate["status"], "detail": "; ".join(gate["reasons"]) or "Fresh evidence binding."})
+    else:
+        gate = {"status": "HOLD", "safe_next_actions": ["Repair governance verification first."]}
+    state = read_json(governance_dir(root) / "state.json") if verification["ok"] else {}
+    snapshot_id = state.get("architecture_snapshot")
+    snapshot_path = governance_dir(root) / "architecture" / f"{snapshot_id}.json" if snapshot_id else None
+    snapshot_status = "PASS" if snapshot_path and snapshot_path.exists() else "STALE"
+    checks.append({"name": "architecture_snapshot", "status": snapshot_status, "detail": snapshot_id or "No current architecture snapshot."})
+    overall = "HOLD" if any(check["status"] == "HOLD" for check in checks) else ("STALE" if any(check["status"] == "STALE" for check in checks) else "PASS")
+    return {"status": overall, "project": str(root), "checks": checks, "safe_next_actions": gate["safe_next_actions"]}
+
+
 def list_proposals(root_value: str | Path) -> list[dict[str, Any]]:
     root = project_dir(root_value)
     directory = governance_dir(root) / "proposals"

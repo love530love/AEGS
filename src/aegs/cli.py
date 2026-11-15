@@ -5,8 +5,8 @@ import json
 import sys
 
 from .console import serve
-from .core import AEGSError, create_handoff, create_proposal, decide, initialise, takeover, verify
-from .discovery import discover
+from .core import AEGSError, create_handoff, create_proposal, decide, doctor, initialise, takeover, verify
+from .discovery import diff_snapshots, discover, list_snapshots
 
 
 def parser() -> argparse.ArgumentParser:
@@ -24,6 +24,16 @@ def parser() -> argparse.ArgumentParser:
     discovery.add_argument("--max-files", type=int, default=5000)
     takeover_command = commands.add_parser("takeover", help="gate Agent work on fresh verified project context")
     takeover_command.add_argument("path", nargs="?", default=".")
+    doctor_command = commands.add_parser("doctor", help="run non-mutating project readiness diagnostics")
+    doctor_command.add_argument("path", nargs="?", default=".")
+    architecture = commands.add_parser("architecture", help="inspect stored architecture snapshots")
+    architecture_commands = architecture.add_subparsers(dest="architecture_command", required=True)
+    snapshots = architecture_commands.add_parser("list")
+    snapshots.add_argument("path", nargs="?", default=".")
+    diff = architecture_commands.add_parser("diff")
+    diff.add_argument("path", nargs="?", default=".")
+    diff.add_argument("--from", dest="older_id", required=True)
+    diff.add_argument("--to", dest="newer_id", required=True)
     proposal = commands.add_parser("proposal", help="manage evolution proposals")
     proposal_commands = proposal.add_subparsers(dest="proposal_command", required=True)
     create = proposal_commands.add_parser("create")
@@ -73,6 +83,12 @@ def main(argv: list[str] | None = None) -> int:
             result = discover(args.path, args.max_files)
         elif args.command == "takeover":
             result = takeover(args.path)
+        elif args.command == "doctor":
+            result = doctor(args.path)
+        elif args.command == "architecture" and args.architecture_command == "list":
+            result = {"snapshots": list_snapshots(args.path)}
+        elif args.command == "architecture" and args.architecture_command == "diff":
+            result = diff_snapshots(args.path, args.older_id, args.newer_id)
         elif args.command == "proposal" and args.proposal_command == "create":
             result = create_proposal(args.path, args.title, args.risk, args.proposer, args.scope, args.alternatives, args.impact, args.counter_evidence, args.acceptance_criteria, args.expires_at)
         else:

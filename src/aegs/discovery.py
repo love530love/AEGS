@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 import hashlib
 import subprocess
+import json
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -158,3 +159,35 @@ def discover(root_value: str | Path, max_files: int = 5000) -> dict[str, Any]:
     write_json(aegs / "state.json", state)
     append_event(root, "architecture.discovered", {"snapshot_id": snapshot_id, "git_head": snapshot["git_head"], "file_count": len(files)})
     return snapshot
+
+
+def list_snapshots(root_value: str | Path) -> list[dict[str, Any]]:
+    root = project_dir(root_value)
+    directory = governance_dir(root) / "architecture"
+    if not directory.exists():
+        return []
+    items = [read_json(path) for path in directory.glob("AS-*.json")]
+    return sorted(items, key=lambda item: item.get("created_at", ""), reverse=True)
+
+
+def diff_snapshots(root_value: str | Path, older_id: str, newer_id: str) -> dict[str, Any]:
+    root = project_dir(root_value)
+    directory = governance_dir(root) / "architecture"
+    older = read_json(directory / f"{older_id}.json")
+    newer = read_json(directory / f"{newer_id}.json")
+    older_files = {item["path"]: item for item in older.get("files", [])}
+    newer_files = {item["path"]: item for item in newer.get("files", [])}
+    added = sorted(set(newer_files) - set(older_files))
+    removed = sorted(set(older_files) - set(newer_files))
+    changed = sorted(path for path in set(older_files) & set(newer_files) if (older_files[path].get("size_bytes"), older_files[path].get("category")) != (newer_files[path].get("size_bytes"), newer_files[path].get("category")))
+    old_relations = {canonical_json(item) for item in older.get("relationships", [])}
+    new_relations = {canonical_json(item) for item in newer.get("relationships", [])}
+    return {
+        "older_snapshot": older_id,
+        "newer_snapshot": newer_id,
+        "older_git_head": older.get("git_head"),
+        "newer_git_head": newer.get("git_head"),
+        "files": {"added": added, "removed": removed, "changed_metadata": changed},
+        "relationships": {"added": [json.loads(item) for item in sorted(new_relations - old_relations)], "removed": [json.loads(item) for item in sorted(old_relations - new_relations)]},
+        "limitations": ["Changed file detection compares category and byte size, not file content hashes.", "Inferred relationships are static hints and require human/runtime confirmation."],
+    }
