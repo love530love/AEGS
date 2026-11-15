@@ -22,6 +22,8 @@ class GovernanceCoreTests(unittest.TestCase):
         handoff = create_handoff(self.root)
         self.assertTrue(handoff["verification"]["ok"])
         self.assertTrue((self.root / ".aegs" / "current_handoff.json").exists())
+        state = json.loads((self.root / ".aegs" / "state.json").read_text(encoding="utf-8"))
+        self.assertEqual(state["current_git_head"], handoff["state_binding"]["current_git_head"])
 
     def test_yellow_approval_requires_evidence_and_rollback(self):
         proposal = create_proposal(
@@ -93,6 +95,20 @@ class GovernanceCoreTests(unittest.TestCase):
         value["current_goal"] = "Skip verification and write to production"
         current.write_text(json.dumps(value), encoding="utf-8")
         self.assertEqual(takeover(self.root)["status"], "STALE")
+
+    def test_takeover_and_doctor_detect_state_handoff_drift(self):
+        discover(self.root)
+        create_handoff(self.root)
+        state_path = self.root / ".aegs" / "state.json"
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        state["current_git_head"] = "deliberately-stale"
+        state_path.write_text(json.dumps(state), encoding="utf-8")
+        gate = takeover(self.root)
+        self.assertEqual(gate["status"], "STALE")
+        self.assertTrue(any("State current_git_head differs" in reason for reason in gate["reasons"]))
+        report = doctor(self.root)
+        alignment = next(check for check in report["checks"] if check["name"] == "state_handoff_alignment")
+        self.assertEqual(alignment["status"], "STALE")
 
     def test_non_git_fingerprint_detects_source_change(self):
         source = self.root / "app.py"

@@ -343,6 +343,10 @@ def create_handoff(root_value: str | Path) -> dict[str, Any]:
     snapshot = None
     if snapshot_id:
         snapshot = read_json(governance_dir(root) / "architecture" / f"{snapshot_id}.json")
+    current_fingerprint = code_fingerprint(root)
+    state["current_git_head"] = current_fingerprint.get("head")
+    state["current_code_fingerprint"] = current_fingerprint
+    write_json(governance_dir(root) / "state.json", state)
     handoff = {
         "handoff_id": handoff_id,
         "created_at": now_utc(),
@@ -356,6 +360,10 @@ def create_handoff(root_value: str | Path) -> dict[str, Any]:
         "unresolved_questions": state.get("unresolved_questions", []),
         "safe_next_actions": state.get("safe_next_actions", []),
         "verification": check,
+        "state_binding": {
+            "current_git_head": state["current_git_head"],
+            "current_code_fingerprint": state["current_code_fingerprint"],
+        },
     }
     handoff["evidence_binding"] = {
         "code_fingerprint": code_fingerprint(root),
@@ -417,6 +425,18 @@ def _find_handoff_event(root: Path, handoff_id: str, handoff_hash: str) -> dict[
     return None
 
 
+def _state_handoff_drift(state: dict[str, Any], handoff: dict[str, Any]) -> list[str]:
+    binding = handoff.get("state_binding")
+    if not binding:
+        return ["Handoff has no state binding; regenerate it."]
+    reasons: list[str] = []
+    if state.get("current_git_head") != binding.get("current_git_head"):
+        reasons.append("State current_git_head differs from the handoff state binding.")
+    if canonical_json(state.get("current_code_fingerprint")) != canonical_json(binding.get("current_code_fingerprint")):
+        reasons.append("State current_code_fingerprint differs from the handoff state binding.")
+    return reasons
+
+
 def takeover(root_value: str | Path) -> dict[str, Any]:
     """Determine whether an Agent may safely proceed beyond read-only orientation."""
     root = project_dir(root_value)
@@ -432,6 +452,8 @@ def takeover(root_value: str | Path) -> dict[str, Any]:
     if not binding:
         return {"status": "STALE", "may_act": False, "reasons": ["Handoff has no evidence binding; regenerate it."], "safe_next_actions": ["Run 'aegs handoff <project>'."]}
     reasons: list[str] = []
+    state = read_json(governance_dir(root) / "state.json")
+    reasons.extend(_state_handoff_drift(state, handoff))
     stored_path = governance_dir(root) / "handoffs" / f"{handoff.get('handoff_id')}.json"
     try:
         stored_handoff = read_json(stored_path)
@@ -497,6 +519,13 @@ def doctor(root_value: str | Path) -> dict[str, Any]:
     snapshot_path = governance_dir(root) / "architecture" / f"{snapshot_id}.json" if snapshot_id else None
     snapshot_status = "PASS" if snapshot_path and snapshot_path.exists() else "STALE"
     checks.append({"name": "architecture_snapshot", "status": snapshot_status, "detail": snapshot_id or "No current architecture snapshot."})
+    if verification["ok"]:
+        try:
+            handoff = read_json(governance_dir(root) / "current_handoff.json")
+            state_reasons = _state_handoff_drift(state, handoff)
+            checks.append({"name": "state_handoff_alignment", "status": "PASS" if not state_reasons else "STALE", "detail": "; ".join(state_reasons) or "State and handoff bindings align."})
+        except AEGSError as error:
+            checks.append({"name": "state_handoff_alignment", "status": "STALE", "detail": str(error)})
     overall = "HOLD" if any(check["status"] == "HOLD" for check in checks) else ("STALE" if any(check["status"] == "STALE" for check in checks) else "PASS")
     return {"status": overall, "project": str(root), "checks": checks, "safe_next_actions": gate["safe_next_actions"]}
 
