@@ -1,0 +1,23 @@
+{
+  "proposal_id": "PR-f92a68b88c94",
+  "status": "APPROVED",
+  "title": "Documentation implementation contract tests",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-15T15:01:11Z",
+  "baseline_git_head": "a7f4cbeefa611cf2f8004a674d3e9e2ed440dadf",
+  "scope": "Executable tests binding four governance documentation claims to AEGS behavior",
+  "alternatives": "Manual document review without drift detection or weaken implementation assertions",
+  "impact": "Document and implementation mismatch fails the standard test suite with claim-specific evidence",
+  "counter_evidence": "Tests cover selected critical claims, not all prose or future external integrations",
+  "acceptance_criteria": "Four claims fail on doc or implementation drift; full pytest passes",
+  "expires_at": "2026-12-15T23:59:59Z",
+  "required_approvals": [
+    "owner"
+  ],
+  "evidence_refs": [
+    "AEP-NL-20261115-2005-07"
+  ],
+  "rollback_reference": "Revert the documentation contract test commit; preserve existing behavior-specific tests.",
+  "decision": "HD-262d7327bf27"
+}

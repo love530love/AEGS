@@ -7,8 +7,8 @@
 已在 AEGS 中修复/收敛的事项：
 
 1. Handoff 现在具备自摘要、不可变历史副本比对和账本事件 attestation；篡改 `current_handoff.json` 会使 `takeover` 返回 `STALE`。
-2. 非 Git 项目使用排除治理目录和可能敏感文件后的文件内容指纹；源文件变化会使接管失效。
-3. YELLOW/RED Proposal 必须包含有时区的 `expires_at`，过期后无法批准。
+2. 非 Git 项目使用排除治理目录和可能敏感文件后的文件内容指纹；敏感路径过滤只按文件名和后缀，不按父目录名过滤；源文件变化会使接管失效。
+3. YELLOW/RED Proposal 在创建期必须包含有时区且尚未过期的 `expires_at`，过期后无法批准。
 4. `decide`、`record_feedback`、`discover` 会先验证治理账本；验证失败时拒绝写入。
 
 尚未解决且不应被误称为已完成：身份认证、签名/外部不可变锚点、并发单写入者、完整 Policy Decision Point、生产执行适配器及 AEP 集成。
