@@ -40,6 +40,7 @@ AEGS 是一个用于研究和实现 **Governed Self-Evolution（受治理的自�
 - [全链路进化与开放生态](docs/17-governed-evolution-loop-and-ecosystem.md)
 - [AEP Sidecar 边界与修复记录](docs/18-aep-sidecar-boundary-and-remediation.md)
 - [State 与 Handoff 新鲜度绑定 ADR](decisions/ADR-0008-state-handoff-freshness-alignment.md)
+- [2026-11-16 夜间收尾审计](docs/25-nightly-closure-audit-2026-11-16.md)
 
 ## 状态
 

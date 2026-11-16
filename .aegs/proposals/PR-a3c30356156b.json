@@ -1,0 +1,23 @@
+{
+  "proposal_id": "PR-a3c30356156b",
+  "status": "APPROVED",
+  "title": "Nightly closure audit report",
+  "risk": "YELLOW",
+  "proposer": "codex",
+  "created_at": "2026-11-16T02:12:59Z",
+  "baseline_git_head": "6549556f33e49e7632d062afbe7b19e85a1d67e1",
+  "scope": "Record independently verified closure evidence, known gaps, and rollback guidance for AEGS changes",
+  "alternatives": "Leave verification results only in ephemeral console output",
+  "impact": "Maintainers receive a versioned, evidence-bounded handoff report without claiming unresolved work is complete",
+  "counter_evidence": "Local test and diagnostic PASS results do not prove production security, authentication, or distributed correctness",
+  "acceptance_criteria": "Report contains exact audit evidence, explicit gaps, and reversible rollback steps",
+  "expires_at": "2026-12-16T23:59:59Z",
+  "required_approvals": [
+    "owner"
+  ],
+  "evidence_refs": [
+    "AEP-NL-20261115-2005-08; local audit 32 pytest PASS, takeover PASS, journal PASS, doctor PASS"
+  ],
+  "rollback_reference": "Revert the nightly audit report commit; retain prior implementation and evidence artifacts.",
+  "decision": "HD-a4f64cbdfdef"
+}

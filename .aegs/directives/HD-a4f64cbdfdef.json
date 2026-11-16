@@ -1,0 +1,13 @@
+{
+  "directive_id": "HD-a4f64cbdfdef",
+  "kind": "decision",
+  "scope": "project",
+  "proposal_id": "PR-a3c30356156b",
+  "action": "APPROVE",
+  "approver": "love530love",
+  "evidence": "AEP-NL-20261115-2005-08; local audit 32 pytest PASS, takeover PASS, journal PASS, doctor PASS",
+  "rollback_reference": "Revert the nightly audit report commit; retain prior implementation and evidence artifacts.",
+  "reason": "A versioned audit report is required for handoff, but it must preserve the distinction between verified local checks and unresolved security or production boundaries.",
+  "independent_reviewer": null,
+  "created_at": "2026-11-16T02:13:07Z"
+}
